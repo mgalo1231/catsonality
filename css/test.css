@@ -1,0 +1,462 @@
+/* 测试页面主体样式 */
+.test-content {
+    width: 100%;
+    height: calc(100vh - 5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2%;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.test-container {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+/* 问题区域 */
+.questions-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+.question-page {
+    display: none;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.question-page.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.question-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.question-text {
+    color: #4a4a4a;
+    font-size: 1.25rem;
+    line-height: 1.8;
+    text-align: center;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* 评分区域 */
+.rating-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.rating-label {
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.rating-label.left {
+    color: #A3C7D9;
+}
+
+.rating-label.right {
+    color: #FE7EB1;
+}
+
+.rating-circles {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rating-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Check mark 图标 */
+.rating-circle::after {
+    content: '✓';
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* 两端圆圈最大 */
+.rating-circle[data-value="1"],
+.rating-circle[data-value="5"] {
+    width: 3rem;
+    height: 3rem;
+}
+
+.rating-circle[data-value="1"]::after,
+.rating-circle[data-value="5"]::after {
+    font-size: 1.4rem;
+}
+
+/* 第二和第四个圆圈中等 */
+.rating-circle[data-value="2"],
+.rating-circle[data-value="4"] {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.rating-circle[data-value="2"]::after,
+.rating-circle[data-value="4"]::after {
+    font-size: 1.2rem;
+}
+
+/* 中间圆圈最小 */
+.rating-circle[data-value="3"] {
+    width: 2rem;
+    height: 2rem;
+}
+
+.rating-circle[data-value="3"]::after {
+    font-size: 1rem;
+}
+
+/* 圆点颜色 */
+.rating-circle.blue {
+    border-color: #A3C7D9;
+}
+
+.rating-circle.gray {
+    border-color: #9B9FAA;
+}
+
+.rating-circle.pink {
+    border-color: #FE7EB1;
+}
+
+/* 选中状态 - 实心颜色 + 白色check mark */
+.rating-circle.blue.selected {
+    background-color: #A3C7D9;
+    border-color: #A3C7D9;
+    box-shadow: 0 0 0 3px rgba(163, 199, 217, 0.3);
+}
+
+.rating-circle.gray.selected {
+    background-color: #9B9FAA;
+    border-color: #9B9FAA;
+    box-shadow: 0 0 0 3px rgba(155, 159, 170, 0.3);
+}
+
+.rating-circle.pink.selected {
+    background-color: #FE7EB1;
+    border-color: #FE7EB1;
+    box-shadow: 0 0 0 3px rgba(254, 126, 177, 0.3);
+}
+
+/* 选中时显示完全不透明的check mark */
+.rating-circle.selected::after {
+    opacity: 1;
+}
+
+/* 已回答的题目样式 - 降低透明度但保持可交互 */
+.question-item.answered {
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+/* hover效果 - 仅对未选中的圆圈生效 */
+.rating-circle:not(.selected):hover {
+    transform: scale(1.1);
+}
+
+.rating-circle.blue:not(.selected):hover {
+    background-color: #A3C7D9;
+}
+
+.rating-circle.gray:not(.selected):hover {
+    background-color: #9B9FAA;
+}
+
+.rating-circle.pink:not(.selected):hover {
+    background-color: #FE7EB1;
+}
+
+/* Hover时显示半透明check mark */
+.rating-circle:not(.selected):hover::after {
+    opacity: 0.8;
+}
+
+/* 导航区域 */
+.navigation-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    min-width: 13rem;
+    border-radius: 999px;
+    font-size: 1.125rem;
+    font-family: "Kiwi Maru", sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.nav-btn .arrow-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 1.25rem;
+}
+
+/* 上一页按钮（描边样式） */
+.prev-btn {
+    background-color: #ffffff;
+    color: #FE7EB1;
+    border-color: #FE7EB1;
+    display: none;
+}
+
+.prev-btn.show {
+    display: flex;
+}
+
+.prev-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(254, 126, 177, 0.25);
+}
+
+.prev-btn:hover .arrow-icon {
+    transform: translateX(-3px);
+}
+
+.prev-btn:active {
+    transform: scale(0.98);
+}
+
+/* 下一页按钮（实心样式） */
+.next-btn {
+    background-color: #FE7EB1;
+    color: #ffffff;
+    border-color: #FE7EB1;
+}
+
+.next-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(254, 126, 177, 0.4);
+}
+
+.next-btn:hover .arrow-icon {
+    transform: translateX(3px);
+}
+
+.next-btn:active {
+    transform: scale(0.98);
+}
+
+/* 分页指示器 */
+.page-indicator {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.indicator-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 2px solid #e8c2d4;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+    background-color: #FE7EB1;
+    border-color: #FE7EB1;
+    transform: scale(1.3);
+}
+
+.indicator-dot:hover:not(.active) {
+    border-color: #FE7EB1;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .test-container {
+        gap: 1.5rem;
+    }
+
+    .question-page {
+        gap: 1.5rem;
+    }
+
+    .question-text {
+        font-size: 1.1rem;
+    }
+
+    .rating-wrapper {
+        gap: 1rem;
+        flex-direction: column;
+    }
+
+    .rating-circles {
+        gap: 0.75rem;
+    }
+
+    .rating-circle {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .rating-circle[data-value="1"],
+    .rating-circle[data-value="5"] {
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .rating-circle[data-value="1"]::after,
+    .rating-circle[data-value="5"]::after {
+        font-size: 1.2rem;
+    }
+
+    .rating-circle[data-value="2"],
+    .rating-circle[data-value="4"] {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .rating-circle[data-value="2"]::after,
+    .rating-circle[data-value="4"]::after {
+        font-size: 1rem;
+    }
+
+    .rating-circle[data-value="3"] {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+
+    .rating-circle[data-value="3"]::after {
+        font-size: 0.9rem;
+    }
+
+    .rating-label {
+        font-size: 0.8rem;
+    }
+
+    .nav-buttons {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-btn {
+        min-width: 10rem;
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .test-content {
+        padding: 0 3%;
+    }
+
+    .question-text {
+        font-size: 1rem;
+    }
+
+    .rating-circle {
+        width: 2rem;
+        height: 2rem;
+        border-width: 1.5px;
+    }
+
+    .rating-circle[data-value="1"],
+    .rating-circle[data-value="5"] {
+        width: 2.4rem;
+        height: 2.4rem;
+    }
+
+    .rating-circle[data-value="1"]::after,
+    .rating-circle[data-value="5"]::after {
+        font-size: 1.1rem;
+    }
+
+    .rating-circle[data-value="2"],
+    .rating-circle[data-value="4"] {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .rating-circle[data-value="2"]::after,
+    .rating-circle[data-value="4"]::after {
+        font-size: 0.95rem;
+    }
+
+    .rating-circle[data-value="3"] {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+
+    .rating-circle[data-value="3"]::after {
+        font-size: 0.8rem;
+    }
+
+    .rating-circles {
+        gap: 0.5rem;
+    }
+
+    .rating-label {
+        font-size: 0.75rem;
+    }
+
+    .nav-btn {
+        min-width: 8rem;
+        font-size: 0.95rem;
+        padding: 0.7rem 1.2rem;
+    }
+
+    .nav-btn .arrow-icon {
+        font-size: 1rem;
+    }
+}
+

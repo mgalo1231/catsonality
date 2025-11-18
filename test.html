@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ねこ性格診断テスト - Catsonality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/test.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="Catsonality Logo">
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-link">ねこ性格診断</a>
+                <a href="#" class="nav-link">タイプ紹介</a>
+                <a href="#" class="nav-link">コミュニティ</a>
+                <a href="#" class="nav-link">お問い合わせ</a>
+                <a href="#" class="nav-link">ログイン</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="test-content">
+        <div class="test-container">
+            <!-- 问题区域 -->
+            <div class="questions-wrapper">
+                <!-- 第1页：题目1-3 -->
+                <div class="question-page active" data-page="1">
+                    <div class="question-item">
+                        <p class="question-text">新しいものや場所にすぐ興味を持って探検する。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="1" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="1" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="1" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="1" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="1" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">見知らぬ人や大きな音に敏感で、すぐ隠れてしまう。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="2" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="2" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="2" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="2" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="2" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">他の猫と一緒にいると、自分が先に食べたり座ったりしたがる。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="3" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="3" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="3" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="3" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="3" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第2页：题目4-6 -->
+                <div class="question-page" data-page="2">
+                    <div class="question-item">
+                        <p class="question-text">遊んでいる途中で突然テンションが上がり、走り回る。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="4" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="4" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="4" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="4" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="4" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">飼い主に甘えるのが好きで、よくすり寄ってくる。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="5" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="5" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="5" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="5" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="5" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">新しい環境になると少し落ち着かなくなる。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="6" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="6" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="6" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="6" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="6" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第3页：题目7-9 -->
+                <div class="question-page" data-page="3">
+                    <div class="question-item">
+                        <p class="question-text">よく高いところに登ったり、外を観察したりする。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="7" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="7" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="7" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="7" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="7" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">他の猫に対して強気な態度を見せることがある。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="8" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="8" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="8" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="8" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="8" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">飼い主が触るとリラックスして喉を鳴らす。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="9" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="9" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="9" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="9" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="9" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第4页：题目10-12 -->
+                <div class="question-page" data-page="4">
+                    <div class="question-item">
+                        <p class="question-text">突然の音や動きに過剰に反応することがある。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="10" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="10" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="10" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="10" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="10" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">新しいおもちゃにすぐ飛びつくタイプだ。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="11" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="11" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="11" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="11" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="11" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">食事や遊びのとき、他の猫を押しのけることがある。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="12" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="12" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="12" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="12" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="12" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第5页：题目13-15 -->
+                <div class="question-page" data-page="5">
+                    <div class="question-item">
+                        <p class="question-text">興奮すると急に気分が変わって落ち着かなくなる。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="13" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="13" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="13" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="13" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="13" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">よく飼い主のそばで過ごし、安心しているように見える。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="14" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="14" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="14" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="14" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="14" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <p class="question-text">初めての人や音にもあまり動じない。</p>
+                        <div class="rating-wrapper">
+                            <span class="rating-label left">まったく当てはまらない</span>
+                            <div class="rating-circles">
+                                <button class="rating-circle blue" data-question="15" data-value="1"></button>
+                                <button class="rating-circle blue" data-question="15" data-value="2"></button>
+                                <button class="rating-circle gray" data-question="15" data-value="3"></button>
+                                <button class="rating-circle pink" data-question="15" data-value="4"></button>
+                                <button class="rating-circle pink" data-question="15" data-value="5"></button>
+                            </div>
+                            <span class="rating-label right">とても当てはまる</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 导航按钮区域 -->
+            <div class="navigation-area">
+                <div class="nav-buttons">
+                    <button class="nav-btn prev-btn" id="prevBtn">
+                        <span class="arrow-icon">←</span>
+                        <span>戻る</span>
+                    </button>
+                    <button class="nav-btn next-btn" id="nextBtn">
+                        <span id="nextBtnText">次へ</span>
+                        <span class="arrow-icon">→</span>
+                    </button>
+                </div>
+
+                <!-- 分页指示器 -->
+                <div class="page-indicator">
+                    <span class="indicator-dot active" data-page="1"></span>
+                    <span class="indicator-dot" data-page="2"></span>
+                    <span class="indicator-dot" data-page="3"></span>
+                    <span class="indicator-dot" data-page="4"></span>
+                    <span class="indicator-dot" data-page="5"></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/test.js"></script>
+</body>
+</html>
+
