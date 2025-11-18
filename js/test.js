@@ -1,6 +1,7 @@
 // 当前页面状态
 let currentPage = 1;
 const totalPages = 5;
+let isTransitioning = false; // 防止动画期间重复切换
 
 // 存储用户的答案
 const answers = {};
@@ -57,6 +58,7 @@ function attachEventListeners() {
     // 分页指示器点击事件
     indicatorDots.forEach(dot => {
         dot.addEventListener('click', (e) => {
+            if (isTransitioning) return; // 动画期间禁用点击
             const targetPage = parseInt(e.target.dataset.page);
             goToPage(targetPage);
         });
@@ -96,17 +98,42 @@ function handleRatingClick(e) {
 
 // 切换到指定页面
 function goToPage(pageNum) {
-    if (pageNum < 1 || pageNum > totalPages) return;
+    if (pageNum < 1 || pageNum > totalPages || isTransitioning) return;
 
-    // 移除所有页面的active类
-    questionPages.forEach(page => {
-        page.classList.remove('active');
-    });
-
-    // 添加active类到目标页面
+    // 找到当前活动页面
+    const currentActivePage = document.querySelector('.question-page.active');
     const targetPage = document.querySelector(`.question-page[data-page="${pageNum}"]`);
-    if (targetPage) {
+
+    if (!targetPage) return;
+
+    // 设置转换状态，禁用按钮
+    isTransitioning = true;
+    disableNavigationButtons();
+
+    // 如果有当前页面，先添加退出动画
+    if (currentActivePage) {
+        currentActivePage.classList.add('exiting');
+        
+        // 等待退出动画完成后再显示新页面
+        setTimeout(() => {
+            currentActivePage.classList.remove('active', 'exiting');
+            
+            // 显示新页面
+            targetPage.classList.add('active');
+            
+            // 动画完成后解除转换状态
+            setTimeout(() => {
+                isTransitioning = false;
+                enableNavigationButtons();
+            }, 500); // 等待进入动画完成
+        }, 400); // 与 pageExit 动画时长匹配
+    } else {
+        // 没有当前页面，直接显示新页面
         targetPage.classList.add('active');
+        setTimeout(() => {
+            isTransitioning = false;
+            enableNavigationButtons();
+        }, 500);
     }
 
     // 更新当前页码
@@ -184,8 +211,22 @@ function showResults() {
     // window.location.href = 'result.html';
 }
 
+// 禁用导航按钮
+function disableNavigationButtons() {
+    prevBtn.classList.add('disabled');
+    nextBtn.classList.add('disabled');
+}
+
+// 启用导航按钮
+function enableNavigationButtons() {
+    prevBtn.classList.remove('disabled');
+    nextBtn.classList.remove('disabled');
+}
+
 // 键盘导航支持
 document.addEventListener('keydown', (e) => {
+    if (isTransitioning) return; // 动画期间禁用键盘导航
+    
     if (e.key === 'ArrowLeft' && currentPage > 1) {
         goToPreviousPage();
     } else if (e.key === 'ArrowRight' && currentPage < totalPages) {
