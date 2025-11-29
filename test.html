@@ -14,14 +14,16 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <img src="images/logo.png" alt="Catsonality Logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Catsonality Logo">
+                </a>
             </div>
             <nav class="nav">
                 <a href="#" class="nav-link">ねこ性格診断</a>
                 <a href="#" class="nav-link">タイプ紹介</a>
                 <a href="#" class="nav-link">コミュニティ</a>
                 <a href="#" class="nav-link">お問い合わせ</a>
-                <a href="#" class="nav-link">ログイン</a>
+                <a href="login.html" class="nav-link">ログイン</a>
             </nav>
         </div>
     </header>
@@ -267,6 +269,26 @@
                             </div>
                             <span class="rating-label right">とても当てはまる</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 个人资料设置页 (第6页) -->
+                <div class="question-page profile-page" data-page="6">
+                    <h2 class="profile-title">最後に、ねこちゃんのことを教えてね</h2>
+                    
+                    <div class="profile-upload-container">
+                        <div class="avatar-upload" id="avatarUpload">
+                            <div class="avatar-preview" id="avatarPreview">
+                                <span class="placeholder-text">写真を選択</span>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+                        <p class="upload-hint">クリックして写真をアップロード（任意）</p>
+                    </div>
+
+                    <div class="profile-input-container">
+                        <label for="catName" class="input-label">ねこちゃんのお名前</label>
+                        <input type="text" id="catName" class="name-input" placeholder="名前を入力してね（任意）">
                     </div>
                 </div>
             </div>

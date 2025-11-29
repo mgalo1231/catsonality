@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診断結果 - Catsonality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/result.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Catsonality Logo">
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">トップ</a>
+                <a href="#" class="nav-link">ねこ性格診断</a>
+                <a href="#" class="nav-link">タイプ紹介</a>
+                <a href="#" class="nav-link">コミュニティ</a>
+                <a href="login.html" class="nav-link">ログイン</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="result-content">
+        <div class="result-container">
+            <h1 class="result-title" id="mainTitle">あなたのねこタイプは…</h1>
+            
+            <!-- 导出/截图区域 -->
+            <div class="result-export-area" id="exportArea">
+                <!-- 用户猫咪信息 (动态显示) -->
+                <div class="user-cat-profile" id="userCatProfile" style="display: none;">
+                    <div class="user-cat-avatar">
+                        <img id="userCatImage" src="" alt="User Cat">
+                    </div>
+                    <div class="user-cat-info">
+                        <span class="user-cat-name" id="userCatName"></span>
+                        <span class="user-cat-suffix">ちゃんの性格は...</span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-image-wrapper">
+                        <img id="resultImage" src="" alt="Result Cat" class="result-image">
+                    </div>
+                    
+                    <div class="result-info">
+                        <h2 id="resultName" class="result-name"></h2>
+                        <p id="resultDesc" class="result-desc"></p>
+                        <p id="resultQuote" class="result-quote"></p>
+                    </div>
+                </div>
+
+                <!-- 底部Logo/水印 -->
+                <div class="result-watermark">
+                    <img src="images/logo.png" alt="Catsonality">
+                    <span class="site-url">catsonality.com</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="test.html" class="btn retake-btn">もう一度診断する</a>
+                <a href="index.html" class="btn home-btn">トップに戻る</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 结果数据定义
+        const resultData = {
+            explorer: {
+                name: "探検家猫 (Explorer Cat)",
+                image: "images/cats/ExplorerCat.png",
+                desc: "好奇心旺盛で、常に新しい場所や冒険を求めているタイプです。恐れを知らず、どこへでも入っていく勇気を持っています。",
+                quote: "「対世界充满好奇，总想去新的地方看看」"
+            },
+            healer: {
+                name: "癒し猫 (Healer Cat)",
+                image: "images/cats/HealerCat.png",
+                desc: "穏やかで優しく、人の心に寄り添うのが得意です。そばにいるだけで安心感を与える、まさに「癒し」の存在です。",
+                quote: "「温柔安静，是最懂人心的小治愈」"
+            },
+            leader: {
+                name: "リーダー猫 (Leader Cat)",
+                image: "images/cats/LeaderCat.png",
+                desc: "自信に満ち溢れ、他の猫たちを引っ張っていく存在感があります。自分の意思をしっかり持ち、堂々としています。",
+                quote: "「有主见又不怕新事物，天生队长型」"
+            },
+            thinker: {
+                name: "哲学者猫 (Thinker Cat)",
+                image: "images/cats/ThinkerCat.png",
+                desc: "繊細で観察眼が鋭く、静かに世界を見つめています。騒がしいのは苦手ですが、深い愛情を持っています。",
+                quote: "「敏感细腻又温柔，喜欢静静观察世界」"
+            },
+            wild: {
+                name: "冒険家猫 (Wild Cat)",
+                image: "images/cats/WildCat.png",
+                desc: "エネルギッシュで自由奔放。じっとしているのが苦手で、常に動き回っている活発なタイプです。",
+                quote: "「热情奔放、行动力强，下一秒就不见了」"
+            },
+            solitary: {
+                name: "隠者猫 (Solitary Cat)",
+                image: "images/cats/SolitaryCat.png",
+                desc: "一人の時間を大切にし、独立心が強いタイプです。誰かに依存することなく、自分のペースで生きています。",
+                quote: "「喜欢安静空间，不依赖别人」"
+            },
+            royal: {
+                name: "王子猫 (Royal Cat)",
+                image: "images/cats/RoyalCat.png",
+                desc: "気品があり、自分は特別だという意識を持っています。少しわがままな一面もありますが、それも魅力の一つです。",
+                quote: "「需要被尊重，也容易情绪化的“小国王”」"
+            },
+            guardian: {
+                name: "守護猫 (Guardian Cat)",
+                image: "images/cats/GuardianCat.png",
+                desc: "安定感があり、家族や仲間を大切にします。穏やかですが、いざという時には頼りになる存在です。",
+                quote: "「稳定可靠、温柔有分寸」"
+            }
+        };
+
+        // 页面加载时处理
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            
+            // 获取数据，如果类型无效则默认使用 explorer
+            const data = resultData[type] || resultData['explorer'];
+            
+            // 获取用户Profile
+            const userProfileStr = localStorage.getItem('catsonalityProfile');
+            let userProfile = null;
+            if (userProfileStr) {
+                try {
+                    userProfile = JSON.parse(userProfileStr);
+                } catch(e) {
+                    console.error('Error parsing profile', e);
+                }
+            }
+
+            // 渲染内容
+            document.getElementById('resultImage').src = data.image;
+            document.getElementById('resultName').textContent = data.name;
+            document.getElementById('resultDesc').textContent = data.desc;
+            document.getElementById('resultQuote').textContent = data.quote;
+
+            // 渲染用户Profile
+            const profileSection = document.getElementById('userCatProfile');
+            const mainTitle = document.getElementById('mainTitle');
+            
+            if (userProfile && (userProfile.name || userProfile.avatar)) {
+                profileSection.style.display = 'flex';
+                
+                // 如果有头像
+                if (userProfile.avatar) {
+                    document.getElementById('userCatImage').src = userProfile.avatar;
+                } else {
+                    // 隐藏头像框或使用默认
+                    document.querySelector('.user-cat-avatar').style.display = 'none';
+                }
+
+                // 如果有名字
+                if (userProfile.name) {
+                    document.getElementById('userCatName').textContent = userProfile.name;
+                    mainTitle.style.display = 'none'; // 隐藏默认标题
+                } else {
+                    document.getElementById('userCatName').textContent = 'あなたのねこ';
+                }
+            }
+
+            // 简单的入场动画
+            const exportArea = document.getElementById('exportArea');
+            exportArea.style.opacity = 0;
+            exportArea.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                exportArea.style.transition = 'all 0.8s ease';
+                exportArea.style.opacity = 1;
+                exportArea.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
+

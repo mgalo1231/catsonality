@@ -1,10 +1,14 @@
 // 当前页面状态
 let currentPage = 1;
-const totalPages = 5;
+const totalPages = 6; // 增加了一页Profile设置
 let isTransitioning = false; // 防止动画期间重复切换
 
 // 存储用户的答案
 const answers = {};
+let userProfile = {
+    name: '',
+    avatar: null // Base64 string
+};
 
 // DOM元素
 const questionPages = document.querySelectorAll('.question-page');
@@ -13,13 +17,88 @@ const nextBtn = document.getElementById('nextBtn');
 const nextBtnText = document.getElementById('nextBtnText');
 const indicatorDots = document.querySelectorAll('.indicator-dot');
 const ratingCircles = document.querySelectorAll('.rating-circle');
+// Profile页元素
+const avatarUpload = document.getElementById('avatarUpload');
+const fileInput = document.getElementById('fileInput');
+const avatarPreview = document.getElementById('avatarPreview');
+const catNameInput = document.getElementById('catName');
 
 // 初始化
 function init() {
     updateNavigation();
     attachEventListeners();
     restoreAnsweredStates();
+    initProfileHandlers();
 }
+
+// Profile页面事件处理
+function initProfileHandlers() {
+    if (!avatarUpload || !fileInput) return;
+
+    avatarUpload.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    catNameInput.addEventListener('input', (e) => {
+        userProfile.name = e.target.value.trim();
+    });
+}
+
+// 处理文件选择与压缩
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // 简单的文件类型检查
+    if (!file.type.startsWith('image/')) {
+        alert('画像ファイルを選択してください。');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+            // 压缩图片
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置最大尺寸
+            const MAX_SIZE = 300;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_SIZE) {
+                    height *= MAX_SIZE / width;
+                    width = MAX_SIZE;
+                }
+            } else {
+                if (height > MAX_SIZE) {
+                    width *= MAX_SIZE / height;
+                    height = MAX_SIZE;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // 转换为Base64
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            userProfile.avatar = dataUrl;
+
+            // 显示预览
+            avatarPreview.style.backgroundImage = `url(${dataUrl})`;
+            avatarPreview.innerHTML = ''; // 清除提示文字
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
 
 // 恢复已回答题目的状态
 function restoreAnsweredStates() {
@@ -155,22 +234,38 @@ function updateNavigation() {
 
     // 下一页按钮文字
     if (currentPage === totalPages) {
-        nextBtnText.textContent = '結果を見る';
+        nextBtnText.textContent = '診断結果を見る'; // 第6页是结果
+    } else if (currentPage === totalPages - 1) {
+        nextBtnText.textContent = '次へ'; // 第5页去第6页
     } else {
         nextBtnText.textContent = '次へ';
     }
+    
+    // 特殊处理：第6页是Profile设置，文字可以是“跳过”如果没有填写？
+    // 这里简化逻辑，最后一步总是“查看结果”，在JS里判断是否保存数据
 }
 
 // 更新分页指示器
 function updateIndicator() {
-    indicatorDots.forEach(dot => {
-        const dotPage = parseInt(dot.dataset.page);
-        if (dotPage === currentPage) {
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('active');
-        }
-    });
+    const indicatorContainer = document.querySelector('.page-indicator');
+    
+    // 如果是Profile页（第6页），隐藏进度条
+    if (currentPage === totalPages) {
+        indicatorContainer.style.opacity = '0';
+        indicatorContainer.style.pointerEvents = 'none';
+    } else {
+        indicatorContainer.style.opacity = '1';
+        indicatorContainer.style.pointerEvents = 'auto';
+        
+        indicatorDots.forEach(dot => {
+            const dotPage = parseInt(dot.dataset.page);
+            if (dotPage === currentPage) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
 }
 
 // 前往上一页
@@ -182,17 +277,36 @@ function goToPreviousPage() {
 
 // 前往下一页或查看结果
 function goToNextPage() {
+    // 检查当前页是否回答完毕（如果是问题页）
+    if (currentPage < totalPages) { // 1-5页是问题
+        // 这里可以加一个简单的检查，确保当前页每道题都答了
+        // 为了用户体验，可以在这里检查
+        // 计算当前页应有的题目ID范围
+        // Page 1: 1-3, Page 2: 4-6...
+        // 简单起见，我们在showResults里做最终检查，这里允许翻页？
+        // 为了严谨，还是在最后一步检查所有题目吧
+    }
+
     if (currentPage === totalPages) {
-        // 在最后一页，显示结果
+        // 在最后一页（Profile页），显示结果
         showResults();
     } else {
+        // 如果是第5页跳第6页，先检查题目是否答完
+        if (currentPage === totalPages - 1) {
+            const totalQuestions = 15;
+            const answeredQuestions = Object.keys(answers).length;
+            if (answeredQuestions < totalQuestions) {
+                 alert(`まだ${totalQuestions - answeredQuestions}問回答していません。すべての質問に答えてください。`);
+                 return;
+            }
+        }
         goToPage(currentPage + 1);
     }
 }
 
-// 显示结果（跳转到结果页面或显示结果）
+// 显示结果
 function showResults() {
-    // 检查是否所有题目都已回答
+    // 再次确认题目回答完整
     const totalQuestions = 15;
     const answeredQuestions = Object.keys(answers).length;
 
@@ -201,14 +315,104 @@ function showResults() {
         return;
     }
 
-    // 保存答案到localStorage（可选）
-    localStorage.setItem('catsonalityAnswers', JSON.stringify(answers));
+    // 保存 Profile 数据到 localStorage
+    if (userProfile.name || userProfile.avatar) {
+        localStorage.setItem('catsonalityProfile', JSON.stringify(userProfile));
+    } else {
+        // 清除旧数据
+        localStorage.removeItem('catsonalityProfile');
+    }
 
-    // 跳转到结果页面（暂时显示alert，后续可以实现result.html）
-    alert('診断が完了しました！結果ページへ移動します。\n\n現在の回答数：' + answeredQuestions);
-    
-    // TODO: 后续可以跳转到结果页面
-    // window.location.href = 'result.html';
+    // 计算各维度分数
+    // 维度计算公式：
+    // Neuroticism: (Q2 + Q6 + Q10 + (6 - Q15)) / 4
+    // Extraversion: (Q1 + Q7 + Q11) / 3
+    // Dominance: (Q3 + Q8 + Q12) / 3
+    // Impulsiveness: (Q4 + Q13) / 2
+    // Agreeableness: (Q5 + Q9 + Q14) / 3
+
+    // 辅助函数：获取题目分数，默认0以防万一
+    const getScore = (q) => answers[q] || 0;
+
+    const scores = {
+        neuroticism: (getScore(2) + getScore(6) + getScore(10) + (6 - getScore(15))) / 4,
+        extraversion: (getScore(1) + getScore(7) + getScore(11)) / 3,
+        dominance: (getScore(3) + getScore(8) + getScore(12)) / 3,
+        impulsiveness: (getScore(4) + getScore(13)) / 2,
+        agreeableness: (getScore(5) + getScore(9) + getScore(14)) / 3
+    };
+
+    console.log("Calculated Scores:", scores);
+
+    // 定义8种性格类型的理想特征向量
+    // 分数范围 1-5。设定理想值：High=4.5, Low=1.5, Mid=3.0
+    const types = {
+        explorer: { // 高外向, 低神经质, 中支配
+            name: 'explorer',
+            vector: { extraversion: 4.5, neuroticism: 1.5, dominance: 3.0, impulsiveness: 3.0, agreeableness: 3.0 } 
+        },
+        healer: { // 高亲和, 低支配, 低冲动
+            name: 'healer',
+            vector: { agreeableness: 4.5, dominance: 1.5, impulsiveness: 1.5, extraversion: 3.0, neuroticism: 3.0 }
+        },
+        leader: { // 高支配, 高外向, 低神经质
+            name: 'leader',
+            vector: { dominance: 4.5, extraversion: 4.5, neuroticism: 1.5, impulsiveness: 3.0, agreeableness: 3.0 }
+        },
+        thinker: { // 高神经质, 高亲和, 低冲动
+            name: 'thinker',
+            vector: { neuroticism: 4.5, agreeableness: 4.5, impulsiveness: 1.5, extraversion: 3.0, dominance: 3.0 }
+        },
+        wild: { // 高冲动, 高外向, 低神经质
+            name: 'wild',
+            vector: { impulsiveness: 4.5, extraversion: 4.5, neuroticism: 1.5, dominance: 3.0, agreeableness: 3.0 }
+        },
+        solitary: { // 低外向, 低亲和, 低冲动
+            name: 'solitary',
+            vector: { extraversion: 1.5, agreeableness: 1.5, impulsiveness: 1.5, neuroticism: 3.0, dominance: 3.0 }
+        },
+        royal: { // 高支配, 高神经质, 高冲动
+            name: 'royal',
+            vector: { dominance: 4.5, neuroticism: 4.5, impulsiveness: 4.5, extraversion: 3.0, agreeableness: 3.0 }
+        },
+        guardian: { // 高亲和, 低冲动, 中外向
+            name: 'guardian',
+            vector: { agreeableness: 4.5, impulsiveness: 1.5, extraversion: 3.0, neuroticism: 3.0, dominance: 3.0 }
+        }
+    };
+
+    // 计算欧几里得距离，找出最近的性格类型
+    let minDistance = Infinity;
+    let matchedType = 'explorer'; // 默认
+
+    for (const typeKey in types) {
+        const type = types[typeKey];
+        let distance = 0;
+        
+        // 计算该类型定义的关键维度的距离
+        // 如果只关注该类型定义的特定维度（如上文High/Low组合），可以只计算相关维度的距离
+        // 这里为了全面，计算所有5个维度，未特别说明的维度取中值3.0参与计算，避免偏差
+        for (const dim in scores) {
+            const diff = scores[dim] - type.vector[dim];
+            distance += diff * diff;
+        }
+        
+        if (distance < minDistance) {
+            minDistance = distance;
+            matchedType = typeKey;
+        }
+    }
+
+    console.log("Matched Type:", matchedType);
+
+    // 保存结果并跳转
+    localStorage.setItem('catsonalityResult', JSON.stringify({
+        scores: scores,
+        type: matchedType
+    }));
+
+    // 跳转到结果页面
+    window.location.href = `result.html?type=${matchedType}`;
 }
 
 // 禁用导航按钮

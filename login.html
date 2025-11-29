@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - Catsonality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Catsonality Logo">
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">ねこ性格診断</a>
+                <a href="#" class="nav-link">タイプ紹介</a>
+                <a href="#" class="nav-link">コミュニティ</a>
+                <a href="#" class="nav-link">お問い合わせ</a>
+                <a href="login.html" class="nav-link" style="color: #E98DB3;">ログイン</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="login-content">
+        <div class="login-card" id="loginCard">
+            <div class="card-header">
+                <h1 class="welcome-text" id="welcomeText" style="display: none;">ようこそ、</h1>
+                <div class="card-logo">
+                    <img src="images/logo_moji.png" alt="Catsonality">
+                </div>
+            </div>
+
+            <div class="auth-toggle">
+                <button class="toggle-btn active" id="loginToggle">ログイン</button>
+                <button class="toggle-btn" id="registerToggle">新規登録</button>
+            </div>
+
+            <form class="login-form" onsubmit="event.preventDefault();">
+                <div class="form-content-wrapper">
+                    <!-- 左侧：个人资料 (仅注册时显示) -->
+                    <div class="profile-section" id="profileSection" style="display: none;">
+                        <div class="avatar-upload" id="avatarUpload">
+                            <div class="avatar-preview" id="avatarPreview">
+                                <span class="placeholder-text">写真を選択</span>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="catName">ねこちゃんの名前</label>
+                            <input type="text" id="catName" name="catName" placeholder="">
+                        </div>
+                    </div>
+
+                    <!-- 右侧：账户信息 -->
+                    <div class="account-section">
+                        <div class="form-group">
+                            <label for="email">メールアドレス</label>
+                            <input type="email" id="email" name="email" placeholder="">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">パスワード</label>
+                            <input type="password" id="password" name="password" placeholder="">
+                        </div>
+
+                        <!-- 仅注册模式显示确认密码 -->
+                        <div class="form-group confirm-password-group" id="confirmPasswordGroup" style="display: none;">
+                            <label for="confirmPassword">パスワード（確認）</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">ログインするにゃ</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/login.js"></script>
+</body>
+</html>
