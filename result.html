@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/result.css">
+    <!-- html2canvas for share image -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- QRious for QR code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
     <header class="header">
@@ -52,75 +56,318 @@
                     
                     <div class="result-info">
                         <h2 id="resultName" class="result-name"></h2>
+                        <p id="resultTagline" class="result-tagline"></p>
                         <p id="resultDesc" class="result-desc"></p>
                         <p id="resultQuote" class="result-quote"></p>
                     </div>
                 </div>
 
-                <!-- 底部Logo/水印 -->
+                <!-- 性格维度分析 -->
+                <div class="dimension-section">
+                    <h3 class="section-title">性格分析チャート</h3>
+                    <div class="radar-chart-container">
+                        <svg class="radar-chart" viewBox="0 0 200 200">
+                            <!-- 背景网格 - 5层 -->
+                            <polygon class="radar-grid" points="100,20 176,60 156,150 44,150 24,60"/>
+                            <polygon class="radar-grid" points="100,36 160,68 144,140 56,140 40,68"/>
+                            <polygon class="radar-grid" points="100,52 144,76 132,130 68,130 56,76"/>
+                            <polygon class="radar-grid" points="100,68 128,84 120,120 80,120 72,84"/>
+                            <polygon class="radar-grid" points="100,84 112,92 108,110 92,110 88,92"/>
+                            
+                            <!-- 轴线 -->
+                            <line class="radar-axis" x1="100" y1="100" x2="100" y2="20"/>
+                            <line class="radar-axis" x1="100" y1="100" x2="176" y2="60"/>
+                            <line class="radar-axis" x1="100" y1="100" x2="156" y2="150"/>
+                            <line class="radar-axis" x1="100" y1="100" x2="44" y2="150"/>
+                            <line class="radar-axis" x1="100" y1="100" x2="24" y2="60"/>
+                            
+                            <!-- 数据多边形 -->
+                            <polygon id="radarData" class="radar-data" points="100,100 100,100 100,100 100,100 100,100"/>
+                            
+                            <!-- 数据点 -->
+                            <g id="radarPoints" class="radar-points"></g>
+                        </svg>
+                        
+                        <!-- 维度标签 -->
+                        <span class="radar-label label-top">外向性</span>
+                        <span class="radar-label label-top-right">支配性</span>
+                        <span class="radar-label label-bottom-right">衝動性</span>
+                        <span class="radar-label label-bottom-left">協調性</span>
+                        <span class="radar-label label-top-left">神経質</span>
+                    </div>
+                    
+                    <!-- 维度条形图 -->
+                    <div class="dimension-bars">
+                        <div class="dimension-item">
+                            <div class="dimension-header">
+                                <span class="dimension-name">外向性</span>
+                                <span class="dimension-value" id="extraversionValue">-</span>
+                            </div>
+                            <div class="dimension-bar">
+                                <div class="dimension-fill" id="extraversionBar"></div>
+                            </div>
+                            <p class="dimension-desc">新しい環境や刺激への積極性</p>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-header">
+                                <span class="dimension-name">神経質</span>
+                                <span class="dimension-value" id="neuroticismValue">-</span>
+                            </div>
+                            <div class="dimension-bar">
+                                <div class="dimension-fill neuroticism" id="neuroticismBar"></div>
+                            </div>
+                            <p class="dimension-desc">環境の変化への敏感さ</p>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-header">
+                                <span class="dimension-name">支配性</span>
+                                <span class="dimension-value" id="dominanceValue">-</span>
+                            </div>
+                            <div class="dimension-bar">
+                                <div class="dimension-fill dominance" id="dominanceBar"></div>
+                            </div>
+                            <p class="dimension-desc">他の猫への態度、リーダーシップ</p>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-header">
+                                <span class="dimension-name">衝動性</span>
+                                <span class="dimension-value" id="impulsivenessValue">-</span>
+                            </div>
+                            <div class="dimension-bar">
+                                <div class="dimension-fill impulsiveness" id="impulsivenessBar"></div>
+                            </div>
+                            <p class="dimension-desc">行動の予測しにくさ、気分の変動</p>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-header">
+                                <span class="dimension-name">協調性</span>
+                                <span class="dimension-value" id="agreeablenessValue">-</span>
+                            </div>
+                            <div class="dimension-bar">
+                                <div class="dimension-fill agreeableness" id="agreeablenessBar"></div>
+                            </div>
+                            <p class="dimension-desc">飼い主への親しみやすさ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 性格特征 -->
+                <div class="traits-section">
+                    <h3 class="section-title">この子の特徴</h3>
+                    <div class="traits-content" id="traitsContent">
+                        <!-- JS动态渲染 -->
+                    </div>
+                </div>
+
+                <!-- 相处建议 -->
+                <div class="tips-section">
+                    <h3 class="section-title">一緒に暮らすヒント</h3>
+                    <div class="tips-content" id="tipsList">
+                        <!-- JS动态渲染 -->
+                    </div>
+                </div>
+
+                <!-- 优势与注意点 -->
+                <div class="balance-section">
+                    <div class="strengths-box">
+                        <h4 class="box-title">良いところ</h4>
+                        <ul class="box-list" id="strengthsList"></ul>
+                    </div>
+                    <div class="cautions-box">
+                        <h4 class="box-title">気をつけたいこと</h4>
+                        <ul class="box-list" id="cautionsList"></ul>
+                    </div>
+                </div>
+
+                <!-- 底部Logo/水印 + 二维码 -->
                 <div class="result-watermark">
-                    <img src="images/logo.png" alt="Catsonality">
-                    <span class="site-url">catsonality.com</span>
+                    <div class="watermark-main">
+                        <img src="images/logo.png" alt="Catsonality">
+                        <span class="site-url">catsonality.com</span>
+                    </div>
+                    <div class="watermark-qrcode">
+                        <canvas id="qrcodeCanvas"></canvas>
+                        <span class="qrcode-hint">スキャンして診断</span>
+                    </div>
                 </div>
             </div>
 
             <div class="action-buttons">
+                <button class="btn share-btn" id="shareBtn">結果をシェアする</button>
                 <a href="test.html" class="btn retake-btn">もう一度診断する</a>
-                <a href="index.html" class="btn home-btn">トップに戻る</a>
+            </div>
+            
+            <!-- 分享模态框 -->
+            <div class="share-modal" id="shareModal">
+                <div class="share-modal-content">
+                    <button class="share-modal-close" id="closeModal">&times;</button>
+                    <h3 class="share-modal-title">シェア用画像</h3>
+                    <div class="share-preview" id="sharePreview">
+                        <p class="share-loading">画像を生成中...</p>
+                    </div>
+                    <div class="share-actions">
+                        <button class="btn download-btn" id="downloadBtn">画像をダウンロード</button>
+                        <button class="btn copy-link-btn" id="copyLinkBtn">リンクをコピー</button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
-        // 结果数据定义
+        // 完整的结果数据定义
         const resultData = {
             explorer: {
-                name: "探検家猫 (Explorer Cat)",
-                image: "images/cats/ExplorerCat.png",
-                desc: "好奇心旺盛で、常に新しい場所や冒険を求めているタイプです。恐れを知らず、どこへでも入っていく勇気を持っています。",
-                quote: "「対世界充满好奇，总想去新的地方看看」"
+                name: "探検家猫",
+                nameEn: "Explorer Cat",
+                image: "images/cats-svg/ExplorerCat.svg",
+                tagline: "世界は冒険の宝箱！",
+                desc: "好奇心旺盛で、常に新しい場所や冒険を求めているタイプです。恐れを知らず、どこへでも入っていく勇気を持っています。未知の世界に対する好奇心が強く、新しいおもちゃや環境にもすぐに適応できます。",
+                quote: "「好奇心の塊、いつも新しい世界を探したがる」",
+                traits: [
+                    "探検家猫は、生まれながらの冒険者です。新しい場所や見慣れないものを見つけると、真っ先に駆け寄って調査を始めます。箱があれば中に入り、高い場所があれば登り、閉まったドアがあれば開けようとする——その好奇心は尽きることがありません。",
+                    "この子の最大の特徴は、その驚くべき適応力です。引っ越しや模様替えなど、環境が変わっても動じることなく、むしろ新しい探検スポットを見つけたとワクワクしている様子が見られます。ストレスに強く、どんな状況でも前向きに楽しむ力を持っています。",
+                    "一方で、じっとしているのは大の苦手。常に何かを探し、動き回り、新しい刺激を求めています。目標を見つけると一直線に向かう集中力があり、その姿はまさに小さなハンターのようです。"
+                ],
+                tips: [
+                    "探検家猫と暮らすなら、まず安全に探検できる環境を整えることが大切です。キャットタワーや棚の上など、高い場所から部屋を見渡せるスポットがあると大喜びします。",
+                    "新しいおもちゃや隠れ場所を定期的に用意してあげると、好奇心が満たされます。段ボール箱や紙袋など、シンプルなものでも十分楽しんでくれるでしょう。ただし、好奇心が強すぎて脱走を試みることもあるので、窓やドアの管理には注意が必要です。"
+                ],
+                strengths: ["適応力が高い", "好奇心旺盛", "活発で元気", "ストレスに強い"],
+                cautions: ["脱走に注意", "いたずら好き", "落ち着きがないことも", "高所からの落下に注意"]
             },
             healer: {
-                name: "癒し猫 (Healer Cat)",
-                image: "images/cats/HealerCat.png",
-                desc: "穏やかで優しく、人の心に寄り添うのが得意です。そばにいるだけで安心感を与える、まさに「癒し」の存在です。",
-                quote: "「温柔安静，是最懂人心的小治愈」"
+                name: "癒し猫",
+                nameEn: "Healer Cat",
+                image: "images/cats-svg/HealerCat.svg",
+                tagline: "あなたの心に寄り添う存在",
+                desc: "穏やかで優しく、人の心に寄り添うのが得意です。そばにいるだけで安心感を与える、まさに「癒し」の存在です。争いを好まず、平和な環境を好みます。飼い主との絆を大切にし、深い愛情を持っています。",
+                quote: "「穏やかで静か、人の心を一番わかってくれる癒しの存在」",
+                traits: [
+                    "癒し猫は、まさに「生きる抱き枕」のような存在です。飼い主のそばにいることを何よりも好み、ソファに座れば隣に、ベッドに入れば足元に、いつの間にか寄り添ってきます。撫でられると気持ちよさそうに喉を鳴らし、その穏やかな振動が人の心まで癒してくれます。",
+                    "争いごとを好まない平和主義者で、他の猫が威嚇してきても、そっと身を引いてやり過ごします。大きな音や急な動きは苦手で、静かで落ち着いた環境を好みます。雷の日や来客時には、安心できる場所に隠れることもあるでしょう。",
+                    "この子の愛情表現は控えめですが、とても深いものがあります。飼い主が悲しんでいる時や疲れている時、なぜかそばに来てくれる——そんな不思議な察知能力を持っています。一緒にいるだけで心が安らぐ、かけがえのない存在です。"
+                ],
+                tips: [
+                    "癒し猫には、静かで落ち着いた環境を用意してあげることが一番大切です。急な環境変化は避け、何か変える時はゆっくりと慣らしてあげましょう。",
+                    "毎日のスキンシップの時間を大切にしてください。ブラッシングや優しく撫でる時間は、この子にとっても飼い主にとっても、大切なコミュニケーションです。他の猫との同居を考える場合は、相性を慎重に見極めることをおすすめします。"
+                ],
+                strengths: ["癒し効果抜群", "穏やかな性格", "飼いやすい", "愛情深い"],
+                cautions: ["環境変化に弱い", "繊細な面も", "一人の時間も必要", "過度な刺激は苦手"]
             },
             leader: {
-                name: "リーダー猫 (Leader Cat)",
-                image: "images/cats/LeaderCat.png",
-                desc: "自信に満ち溢れ、他の猫たちを引っ張っていく存在感があります。自分の意思をしっかり持ち、堂々としています。",
-                quote: "「有主见又不怕新事物，天生队长型」"
+                name: "リーダー猫",
+                nameEn: "Leader Cat",
+                image: "images/cats-svg/LeaderCat.svg",
+                tagline: "堂々たる存在感の持ち主",
+                desc: "自信に満ち溢れ、他の猫たちを引っ張っていく存在感があります。自分の意思をしっかり持ち、堂々としています。新しいことへの挑戦を恐れず、困難な状況でも冷静に対処できる頼もしいタイプです。",
+                quote: "「自分の意思をしっかり持ち、新しいことも恐れない生まれながらのリーダー」",
+                traits: [
+                    "リーダー猫は、群れの中で自然とトップに立つタイプです。他の猫がいる場所では堂々とした態度で振る舞い、自分の意思をはっきりと表現します。「こうしたい」「これは嫌」という主張が明確で、飼い主との関係も対等に近いものになります。",
+                    "新しい環境にも臆することなく適応できる強さを持っています。引っ越しや新しい家族が増えても、動じることなく状況を把握し、自分のポジションを確立していきます。困難な状況でも冷静さを失わない、頼もしい存在です。",
+                    "知的で観察力があり、飼い主の行動パターンをよく理解しています。ドアの開け方を覚えたり、おやつの場所を把握したり——その賢さには驚かされることも多いでしょう。"
+                ],
+                tips: [
+                    "リーダー猫と暮らすコツは、この子を尊重することです。無理に抱っこしたり、嫌がることを強制したりすると、信頼関係が崩れてしまいます。適度な自由と、自分だけのスペースを確保してあげましょう。",
+                    "知的な刺激を好むので、パズルフィーダーや知育おもちゃなど、頭を使う遊びを用意すると喜びます。多頭飼いの場合は、他の猫との相性に注意が必要です。リーダー気質同士だと衝突することもあります。"
+                ],
+                strengths: ["頼りがいがある", "自立心が強い", "適応力がある", "堂々としている"],
+                cautions: ["頑固な面も", "他の猫との相性", "支配的になることも", "自己主張が強い"]
             },
             thinker: {
-                name: "哲学者猫 (Thinker Cat)",
-                image: "images/cats/ThinkerCat.png",
-                desc: "繊細で観察眼が鋭く、静かに世界を見つめています。騒がしいのは苦手ですが、深い愛情を持っています。",
-                quote: "「敏感细腻又温柔，喜欢静静观察世界」"
+                name: "哲学者猫",
+                nameEn: "Thinker Cat",
+                image: "images/cats-svg/ThinkerCat.svg",
+                tagline: "静かに世界を見つめる賢者",
+                desc: "繊細で観察眼が鋭く、静かに世界を見つめています。騒がしいのは苦手ですが、深い愛情を持っています。物事をじっくり考え、慎重に行動するタイプ。一度信頼した相手には深い絆を築きます。",
+                quote: "「繊細で優しく、静かに世界を見つめるのが好き」",
+                traits: [
+                    "哲学者猫は、世界を静かに観察する賢者のような存在です。新しいものや人に対しては慎重で、まず遠くからじっくりと観察し、安全だと判断してから少しずつ近づいていきます。この慎重さは臆病さではなく、知性の表れです。",
+                    "環境の変化に非常に敏感で、部屋の家具が少し移動しただけでも気づきます。静かな環境を好み、一人で窓の外を眺めたり、日向ぼっこをしたりする時間を大切にしています。騒がしい場所や急な変化は苦手です。",
+                    "飼い主との絆は深いものがありますが、その表現は控えめです。派手に甘えることは少ないですが、信頼した相手には静かに寄り添い、深い愛情を示してくれます。一度築いた信頼関係は、とても強固なものになるでしょう。"
+                ],
+                tips: [
+                    "哲学者猫には、安心できる隠れ場所を用意してあげることが大切です。高い場所や狭い空間など、この子だけの「安全基地」があると落ち着きます。急かさず、この子のペースを尊重してあげてください。",
+                    "規則正しい生活リズムを維持することで、安心感を与えられます。食事や遊びの時間をなるべく一定にしましょう。信頼関係を築くには時間がかかりますが、焦らずゆっくりと向き合うことで、かけがえのない絆が生まれます。"
+                ],
+                strengths: ["観察力が鋭い", "深い愛情", "落ち着いている", "賢い"],
+                cautions: ["環境変化に敏感", "ストレスを溜めやすい", "打ち解けるまで時間がかかる", "隠れがち"]
             },
             wild: {
-                name: "冒険家猫 (Wild Cat)",
-                image: "images/cats/WildCat.png",
-                desc: "エネルギッシュで自由奔放。じっとしているのが苦手で、常に動き回っている活発なタイプです。",
-                quote: "「热情奔放、行动力强，下一秒就不见了」"
+                name: "冒険家猫",
+                nameEn: "Wild Cat",
+                image: "images/cats-svg/WildCat.svg",
+                tagline: "エネルギー全開！自由な魂",
+                desc: "エネルギッシュで自由奔放。じっとしているのが苦手で、常に動き回っている活発なタイプです。予測不能な行動も多く、毎日が冒険です。遊び心に溢れ、飼い主を飽きさせることがありません。",
+                quote: "「情熱的で行動力抜群、次の瞬間にはもういない」",
+                traits: [
+                    "冒険家猫は、エネルギーの塊のような存在です。朝起きた瞬間から全力で走り回り、夜になっても元気いっぱい。「猫は一日の大半を寝て過ごす」という常識を覆すほど、常に動き回っています。遊びが大好きで、おもちゃを見せればいつでも飛びかかってきます。",
+                    "この子の行動は予測不能で、毎日がサプライズの連続です。突然ダッシュを始めたかと思えば、急に止まって何かを凝視し、次の瞬間にはまた走り出す。その自由奔放な姿は、見ているだけで楽しくなります。",
+                    "好奇心も旺盛で、動くものには何でも興味を示します。虫、影、水滴、飼い主の足——すべてが遊びの対象です。退屈することがなく、一緒にいると飼い主の生活も自然と活発になるでしょう。"
+                ],
+                tips: [
+                    "冒険家猫と暮らすなら、十分な運動と遊びの時間を確保することが最重要です。毎日の遊び時間は欠かさず、できれば朝晩の2回、しっかりと体を動かせる時間を作りましょう。エネルギーを発散できないとストレスが溜まり、問題行動につながることもあります。",
+                    "安全に走り回れるスペースがあると理想的です。おもちゃは定期的に新しいものを用意し、飽きさせないようにしましょう。また、高い場所への動線を作ってあげると、運動量が増えて満足度も上がります。"
+                ],
+                strengths: ["元気いっぱい", "遊び上手", "退屈しない", "生命力がある"],
+                cautions: ["落ち着きがない", "いたずら注意", "物を壊すことも", "脱走の可能性"]
             },
             solitary: {
-                name: "隠者猫 (Solitary Cat)",
-                image: "images/cats/SolitaryCat.png",
-                desc: "一人の時間を大切にし、独立心が強いタイプです。誰かに依存することなく、自分のペースで生きています。",
-                quote: "「喜欢安静空间，不依赖别人」"
+                name: "隠者猫",
+                nameEn: "Solitary Cat",
+                image: "images/cats-svg/SolitaryCat.svg",
+                tagline: "自分だけの世界を大切にする",
+                desc: "一人の時間を大切にし、独立心が強いタイプです。誰かに依存することなく、自分のペースで生きています。必要以上のスキンシップは好みませんが、自分から寄ってきた時は特別な瞬間です。",
+                quote: "「静かな空間が好き、誰にも頼らず自分のペースで」",
+                traits: [
+                    "隠者猫は、独立心が強く、自分だけの世界を大切にするタイプです。一人でいることを苦にせず、むしろ静かな時間を楽しんでいるように見えます。窓辺で外を眺めたり、お気に入りの場所でまどろんだり——そんな穏やかな時間の過ごし方を好みます。",
+                    "過度なスキンシップは苦手で、抱っこされることや長時間撫でられることを嫌がることもあります。これは愛情がないわけではなく、この子なりの距離感の取り方です。自分のテリトリーを大切にし、そこに踏み込まれることを好みません。",
+                    "しかし、この子が自分から寄ってきた時——それは特別な瞬間です。普段は距離を置いているからこそ、その時の親密さは格別なものがあります。信頼のサインとして、大切に受け止めてあげてください。"
+                ],
+                tips: [
+                    "隠者猫には、一人になれる静かなスペースを確保してあげることが何より大切です。押し入れの中や棚の上など、誰にも邪魔されない「自分だけの場所」があると安心します。",
+                    "無理にスキンシップを求めないことが、信頼関係を築くコツです。この子が寄ってきた時だけ、優しく接してあげましょう。他の猫との同居は慎重に検討すべきです。一人の時間を大切にするこの子にとって、常に他の猫がいる環境はストレスになることがあります。"
+                ],
+                strengths: ["手がかからない", "自立している", "穏やか", "落ち着いている"],
+                cautions: ["愛情表現が少ない", "懐くまで時間がかかる", "多頭飼いに不向き", "孤独を好む"]
             },
             royal: {
-                name: "王子猫 (Royal Cat)",
-                image: "images/cats/RoyalCat.png",
-                desc: "気品があり、自分は特別だという意識を持っています。少しわがままな一面もありますが、それも魅力の一つです。",
-                quote: "「需要被尊重，也容易情绪化的“小国王”」"
+                name: "王子猫",
+                nameEn: "Royal Cat",
+                image: "images/cats-svg/RoyalCat.svg",
+                tagline: "気品と誇りを持つ特別な存在",
+                desc: "気品があり、自分は特別だという意識を持っています。少しわがままな一面もありますが、それも魅力の一つです。尊重されることを好み、自分のペースを乱されることを嫌います。",
+                quote: "「尊重されたい、感情豊かな小さな王様」",
+                traits: [
+                    "王子猫は、自分が特別な存在であることを知っています。その堂々とした佇まいと、どこか気高い雰囲気は、まさに「小さな王様」の風格です。尊重されることを好み、自分のペースを乱されることを嫌います。",
+                    "感情表現がとても豊かで、嬉しい時、不満な時、甘えたい時——それぞれの気持ちがはっきりと伝わってきます。気分の波があり、さっきまで機嫌が良かったのに急にそっぽを向くことも。そんな気まぐれさも、この子の魅力の一つです。",
+                    "わがままに見えることもありますが、それは自分の気持ちに正直な証拠。本当に信頼した相手には、とびきりの甘えん坊な一面を見せてくれることもあります。その時のギャップが、飼い主の心をつかんで離しません。"
+                ],
+                tips: [
+                    "王子猫と暮らすには、この子の気持ちを尊重することが大切です。無理強いは絶対に避け、嫌がっている時は静かに見守りましょう。快適な環境と上質な居場所を用意してあげると喜びます。",
+                    "スキンシップはこの子のタイミングに合わせるのがベストです。気分が乗らない時に無理に触ろうとすると、機嫌を損ねてしまいます。この子が甘えてきた時を逃さず、たっぷりと愛情を注いであげてください。"
+                ],
+                strengths: ["個性的", "感情豊か", "存在感がある", "気品がある"],
+                cautions: ["わがままな面も", "気分屋", "機嫌を損ねやすい", "ストレスに注意"]
             },
             guardian: {
-                name: "守護猫 (Guardian Cat)",
-                image: "images/cats/GuardianCat.png",
-                desc: "安定感があり、家族や仲間を大切にします。穏やかですが、いざという時には頼りになる存在です。",
-                quote: "「稳定可靠、温柔有分寸」"
+                name: "守護猫",
+                nameEn: "Guardian Cat",
+                image: "images/cats-svg/GuardianCat.svg",
+                tagline: "安定感のある頼れる存在",
+                desc: "安定感があり、家族や仲間を大切にします。穏やかですが、いざという時には頼りになる存在です。バランスの取れた性格で、飼いやすく、家庭に安らぎをもたらします。",
+                quote: "「安定感があり頼れる、優しさと距離感のバランスが絶妙」",
+                traits: [
+                    "守護猫は、安定感のある頼れる存在です。穏やかで落ち着いた性格で、極端に甘えすぎることも、冷たくしすぎることもありません。飼い主との間に心地よい距離感を保ちながら、いつもそばで見守ってくれています。",
+                    "バランスの取れた性格で、環境の変化にも比較的うまく対応できます。新しい場所や人にも、時間をかけて慣れていくことができ、過度に怯えたり興奮したりすることは少ないでしょう。家庭に安らぎをもたらす、理想的な家族の一員です。",
+                    "派手な愛情表現は少ないかもしれませんが、飼い主との関係を大切にしています。疲れて帰ってきた時、静かにそばにいてくれる——そんなさりげない優しさが、この子の魅力です。"
+                ],
+                tips: [
+                    "守護猫には、安定した生活リズムを維持してあげることが大切です。この子の穏やかさは、安定した環境から生まれています。急な変化は避け、予測可能な日常を心がけましょう。",
+                    "適度なスキンシップを心がけ、この子のペースを尊重してあげてください。他の猫とも比較的うまくやれることが多いので、多頭飼いを考えている場合は良い選択かもしれません。穏やかな性格を大切に、ゆったりとした時間を一緒に過ごしてあげてください。"
+                ],
+                strengths: ["飼いやすい", "安定している", "バランスが良い", "穏やか"],
+                cautions: ["刺激が少ないと退屈かも", "存在感が薄くなりがち", "甘えが足りないことも", "主張が控えめ"]
             }
         };
 
@@ -131,6 +378,29 @@
             
             // 获取数据，如果类型无效则默认使用 explorer
             const data = resultData[type] || resultData['explorer'];
+            
+            // 从localStorage获取分数
+            let scores = null;
+            const resultStr = localStorage.getItem('catsonalityResult');
+            if (resultStr) {
+                try {
+                    const resultObj = JSON.parse(resultStr);
+                    scores = resultObj.scores;
+                } catch(e) {
+                    console.error('Error parsing result', e);
+                }
+            }
+            
+            // 如果没有分数，使用默认值
+            if (!scores) {
+                scores = {
+                    extraversion: 3,
+                    neuroticism: 3,
+                    dominance: 3,
+                    impulsiveness: 3,
+                    agreeableness: 3
+                };
+            }
             
             // 获取用户Profile
             const userProfileStr = localStorage.getItem('catsonalityProfile');
@@ -143,9 +413,10 @@
                 }
             }
 
-            // 渲染内容
+            // 渲染基本内容
             document.getElementById('resultImage').src = data.image;
-            document.getElementById('resultName').textContent = data.name;
+            document.getElementById('resultName').textContent = data.name + ' (' + data.nameEn + ')';
+            document.getElementById('resultTagline').textContent = data.tagline;
             document.getElementById('resultDesc').textContent = data.desc;
             document.getElementById('resultQuote').textContent = data.quote;
 
@@ -156,34 +427,215 @@
             if (userProfile && (userProfile.name || userProfile.avatar)) {
                 profileSection.style.display = 'flex';
                 
-                // 如果有头像
                 if (userProfile.avatar) {
                     document.getElementById('userCatImage').src = userProfile.avatar;
                 } else {
-                    // 隐藏头像框或使用默认
                     document.querySelector('.user-cat-avatar').style.display = 'none';
                 }
 
-                // 如果有名字
                 if (userProfile.name) {
                     document.getElementById('userCatName').textContent = userProfile.name;
-                    mainTitle.style.display = 'none'; // 隐藏默认标题
+                    mainTitle.style.display = 'none';
                 } else {
                     document.getElementById('userCatName').textContent = 'あなたのねこ';
                 }
             }
 
-            // 简单的入场动画
+            // 渲染雷达图和维度条形图
+            renderRadarChart(scores);
+            
+            // 渲染详细内容
+            renderDetails(data);
+
+            // 生成二维码
+            generateQRCode();
+
+            // 入场动画
+            animateEntrance();
+        });
+
+        // 生成二维码
+        function generateQRCode() {
+            const testPageUrl = window.location.origin + window.location.pathname.replace('result.html', 'test.html');
+            
+            new QRious({
+                element: document.getElementById('qrcodeCanvas'),
+                value: testPageUrl,
+                size: 120,
+                backgroundAlpha: 0,
+                foreground: '#FE7EB1',
+                level: 'M'
+            });
+        }
+
+        // 渲染雷达图
+        function renderRadarChart(scores) {
+            const center = 100;
+            const maxRadius = 80;
+            
+            // 5个维度的角度 (从顶部开始，顺时针)
+            // 顺序: 外向性, 支配性, 冲动性, 协调性, 神经质
+            const angles = [-90, -18, 54, 126, 198];
+            const dimensions = ['extraversion', 'dominance', 'impulsiveness', 'agreeableness', 'neuroticism'];
+            
+            // 计算各点坐标
+            const points = dimensions.map((dim, i) => {
+                const value = scores[dim] / 5;
+                const radius = value * maxRadius;
+                const angle = angles[i] * (Math.PI / 180);
+                return {
+                    x: center + radius * Math.cos(angle),
+                    y: center + radius * Math.sin(angle)
+                };
+            });
+            
+            // 设置多边形
+            const pointsStr = points.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+            
+            // 延迟动画效果
+            setTimeout(() => {
+                document.getElementById('radarData').setAttribute('points', pointsStr);
+                
+                // 添加数据点
+                const pointsContainer = document.getElementById('radarPoints');
+                pointsContainer.innerHTML = points.map(p => 
+                    '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '"/>'
+                ).join('');
+            }, 500);
+            
+            // 渲染条形图
+            const barMappings = [
+                { key: 'extraversion', bar: 'extraversionBar', value: 'extraversionValue' },
+                { key: 'neuroticism', bar: 'neuroticismBar', value: 'neuroticismValue' },
+                { key: 'dominance', bar: 'dominanceBar', value: 'dominanceValue' },
+                { key: 'impulsiveness', bar: 'impulsivenessBar', value: 'impulsivenessValue' },
+                { key: 'agreeableness', bar: 'agreeablenessBar', value: 'agreeablenessValue' }
+            ];
+            
+            barMappings.forEach(({ key, bar, value }, index) => {
+                const score = scores[key];
+                const percentage = (score / 5) * 100;
+                
+                setTimeout(() => {
+                    document.getElementById(bar).style.width = percentage + '%';
+                    document.getElementById(value).textContent = score.toFixed(1);
+                }, 600 + index * 100);
+            });
+        }
+
+        // 渲染详细内容
+        function renderDetails(data) {
+            // 渲染特征段落
+            const traitsContent = document.getElementById('traitsContent');
+            traitsContent.innerHTML = data.traits.map(trait => '<p>' + trait + '</p>').join('');
+            
+            // 渲染建议段落
+            const tipsList = document.getElementById('tipsList');
+            tipsList.innerHTML = data.tips.map(tip => '<p>' + tip + '</p>').join('');
+            
+            // 渲染优势
+            const strengthsList = document.getElementById('strengthsList');
+            strengthsList.innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
+            
+            // 渲染注意点
+            const cautionsList = document.getElementById('cautionsList');
+            cautionsList.innerHTML = data.cautions.map(c => '<li>' + c + '</li>').join('');
+        }
+
+        // 入场动画
+        function animateEntrance() {
             const exportArea = document.getElementById('exportArea');
             exportArea.style.opacity = 0;
-            exportArea.style.transform = 'translateY(20px)';
+            exportArea.style.transform = 'translateY(30px)';
+            
             setTimeout(() => {
-                exportArea.style.transition = 'all 0.8s ease';
+                exportArea.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
                 exportArea.style.opacity = 1;
                 exportArea.style.transform = 'translateY(0)';
             }, 100);
+        }
+
+        // ===== 分享功能 =====
+        let generatedImage = null;
+
+        // 打开分享模态框
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            const modal = document.getElementById('shareModal');
+            const preview = document.getElementById('sharePreview');
+            const qrcodeEl = document.querySelector('.watermark-qrcode');
+            
+            modal.classList.add('active');
+            preview.innerHTML = '<p class="share-loading">画像を生成中...</p>';
+            
+            try {
+                // 显示二维码用于截图
+                qrcodeEl.classList.add('visible');
+                
+                // 等待一帧确保渲染完成
+                await new Promise(resolve => requestAnimationFrame(resolve));
+                
+                // 生成图片
+                const exportArea = document.getElementById('exportArea');
+                const canvas = await html2canvas(exportArea, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+                
+                // 隐藏二维码
+                qrcodeEl.classList.remove('visible');
+                
+                generatedImage = canvas.toDataURL('image/png');
+                
+                // 显示预览
+                preview.innerHTML = '<img src="' + generatedImage + '" alt="Share Preview" class="share-image">';
+            } catch (error) {
+                console.error('Error generating image:', error);
+                preview.innerHTML = '<p class="share-error">画像の生成に失敗しました</p>';
+                // 确保出错时也隐藏二维码
+                qrcodeEl.classList.remove('visible');
+            }
+        });
+
+        // 关闭模态框
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('shareModal').classList.remove('active');
+        });
+
+        // 点击背景关闭
+        document.getElementById('shareModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.classList.remove('active');
+            }
+        });
+
+        // 下载图片
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            if (!generatedImage) return;
+            
+            const link = document.createElement('a');
+            link.download = 'catsonality-result.png';
+            link.href = generatedImage;
+            link.click();
+        });
+
+        // 复制链接
+        document.getElementById('copyLinkBtn').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                const btn = document.getElementById('copyLinkBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'コピーしました！';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                alert('リンクのコピーに失敗しました');
+            }
         });
     </script>
 </body>
 </html>
-

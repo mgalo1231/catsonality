@@ -13,8 +13,20 @@ body {
     font-family: "Kiwi Maru", -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
     background-color: #ffffff;
     width: 100%;
+    min-height: 100vh;
+}
+
+/* 首页和测试页保持不滚动 */
+body:has(.main-content),
+body:has(.test-content) {
     height: 100vh;
     overflow: hidden;
+}
+
+/* 结果页允许滚动 */
+body:has(.result-content) {
+    height: auto;
+    overflow-y: auto;
 }
 
 /* Header 样式 */
