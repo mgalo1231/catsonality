@@ -456,7 +456,8 @@
 
         // 生成二维码
         function generateQRCode() {
-            const testPageUrl = window.location.origin + window.location.pathname.replace('result.html', 'test.html');
+            // 部署后的正式地址
+            const testPageUrl = 'https://mgalo1231.github.io/catsonality/test.html';
             
             new QRious({
                 element: document.getElementById('qrcodeCanvas'),
