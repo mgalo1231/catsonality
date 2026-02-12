@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg">
+    <title>タイプ紹介 - Catsonality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/types.css">
+    <link rel="stylesheet" href="css/loading.css">
+</head>
+<body>
+    <!-- 左上角固定Logo -->
+    <div class="logo-fixed">
+        <a href="index.html">
+            <img src="images/logo.png" alt="Catsonality Logo">
+        </a>
+    </div>
+
+    <!-- 右上角导航栏 -->
+    <header class="header">
+        <nav class="nav">
+            <a href="test.html" class="nav-link">ねこ性格診断</a>
+            <a href="types.html" class="nav-link active">タイプ紹介</a>
+            <a href="community.html" class="nav-link">コミュニティ</a>
+            <a href="login.html" class="nav-link login-btn">ログイン</a>
+        </nav>
+    </header>
+
+    <main class="types-content">
+        <div class="types-header">
+            <h1 class="types-title">8つの猫性格タイプ</h1>
+            <p class="types-subtitle">あなたの猫はどのタイプ？</p>
+        </div>
+
+        <div class="types-grid">
+            <!-- 探検家猫 -->
+            <div class="type-card" data-type="explorer">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/ExplorerCat.svg" alt="探検家猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">探検家猫</h2>
+                    <p class="type-name-en">Explorer Cat</p>
+                    <p class="type-tagline">世界は冒険の宝箱！</p>
+                    <p class="type-desc">好奇心旺盛で、常に新しい場所や冒険を求めているタイプです。恐れを知らず、どこへでも入っていく勇気を持っています。未知の世界に対する好奇心が強く、新しいおもちゃや環境にもすぐに適応できます。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">適応力が高い</div>
+                        <div class="trait-tag">好奇心旺盛</div>
+                        <div class="trait-tag">活発で元気</div>
+                        <div class="trait-tag">ストレスに強い</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 癒し猫 -->
+            <div class="type-card" data-type="healer">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/HealerCat.svg" alt="癒し猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">癒し猫</h2>
+                    <p class="type-name-en">Healer Cat</p>
+                    <p class="type-tagline">あなたの心に寄り添う存在</p>
+                    <p class="type-desc">穏やかで優しく、人の心に寄り添うのが得意です。そばにいるだけで安心感を与える、まさに「癒し」の存在です。争いを好まず、平和な環境を好みます。飼い主との絆を大切にし、深い愛情を持っています。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">癒し効果抜群</div>
+                        <div class="trait-tag">穏やかな性格</div>
+                        <div class="trait-tag">飼いやすい</div>
+                        <div class="trait-tag">愛情深い</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- リーダー猫 -->
+            <div class="type-card" data-type="leader">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/LeaderCat.svg" alt="リーダー猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">リーダー猫</h2>
+                    <p class="type-name-en">Leader Cat</p>
+                    <p class="type-tagline">堂々たる存在感の持ち主</p>
+                    <p class="type-desc">自信に満ち溢れ、他の猫たちを引っ張っていく存在感があります。自分の意思をしっかり持ち、堂々としています。新しいことへの挑戦を恐れず、困難な状況でも冷静に対処できる頼もしいタイプです。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">頼りがいがある</div>
+                        <div class="trait-tag">自立心が強い</div>
+                        <div class="trait-tag">適応力がある</div>
+                        <div class="trait-tag">堂々としている</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 哲学者猫 -->
+            <div class="type-card" data-type="thinker">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/ThinkerCat.svg" alt="哲学者猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">哲学者猫</h2>
+                    <p class="type-name-en">Thinker Cat</p>
+                    <p class="type-tagline">静かに世界を見つめる賢者</p>
+                    <p class="type-desc">繊細で観察眼が鋭く、静かに世界を見つめています。騒がしいのは苦手ですが、深い愛情を持っています。物事をじっくり考え、慎重に行動するタイプ。一度信頼した相手には深い絆を築きます。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">観察力が鋭い</div>
+                        <div class="trait-tag">深い愛情</div>
+                        <div class="trait-tag">落ち着いている</div>
+                        <div class="trait-tag">賢い</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 冒険家猫 -->
+            <div class="type-card" data-type="wild">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/WildCat.svg" alt="冒険家猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">冒険家猫</h2>
+                    <p class="type-name-en">Wild Cat</p>
+                    <p class="type-tagline">エネルギー全開！自由な魂</p>
+                    <p class="type-desc">エネルギッシュで自由奔放。じっとしているのが苦手で、常に動き回っている活発なタイプです。予測不能な行動も多く、毎日が冒険です。遊び心に溢れ、飼い主を飽きさせることがありません。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">元気いっぱい</div>
+                        <div class="trait-tag">遊び上手</div>
+                        <div class="trait-tag">退屈しない</div>
+                        <div class="trait-tag">生命力がある</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 隠者猫 -->
+            <div class="type-card" data-type="solitary">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/SolitaryCat.svg" alt="隠者猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">隠者猫</h2>
+                    <p class="type-name-en">Solitary Cat</p>
+                    <p class="type-tagline">自分だけの世界を大切にする</p>
+                    <p class="type-desc">一人の時間を大切にし、独立心が強いタイプです。誰かに依存することなく、自分のペースで生きています。必要以上のスキンシップは好みませんが、自分から寄ってきた時は特別な瞬間です。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">手がかからない</div>
+                        <div class="trait-tag">自立している</div>
+                        <div class="trait-tag">穏やか</div>
+                        <div class="trait-tag">落ち着いている</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 王子猫 -->
+            <div class="type-card" data-type="royal">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/RoyalCat.svg" alt="王子猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">王子猫</h2>
+                    <p class="type-name-en">Royal Cat</p>
+                    <p class="type-tagline">気品と誇りを持つ特別な存在</p>
+                    <p class="type-desc">気品があり、自分は特別だという意識を持っています。少しわがままな一面もありますが、それも魅力の一つです。尊重されることを好み、自分のペースを乱されることを嫌います。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">個性的</div>
+                        <div class="trait-tag">感情豊か</div>
+                        <div class="trait-tag">存在感がある</div>
+                        <div class="trait-tag">気品がある</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 守護猫 -->
+            <div class="type-card" data-type="guardian">
+                <div class="type-card-image">
+                    <img src="images/cats-svg/GuardianCat.svg" alt="守護猫">
+                </div>
+                <div class="type-card-content">
+                    <h2 class="type-name">守護猫</h2>
+                    <p class="type-name-en">Guardian Cat</p>
+                    <p class="type-tagline">安定感のある頼れる存在</p>
+                    <p class="type-desc">安定感があり、家族や仲間を大切にします。穏やかですが、いざという時には頼りになる存在です。バランスの取れた性格で、飼いやすく、家庭に安らぎをもたらします。</p>
+                    <div class="type-traits">
+                        <div class="trait-tag">飼いやすい</div>
+                        <div class="trait-tag">安定している</div>
+                        <div class="trait-tag">バランスが良い</div>
+                        <div class="trait-tag">穏やか</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="types-cta">
+                <p>あなたの猫の性格を診断してみませんか？</p>
+                <a href="test.html" class="btn cta-btn">診断を始める</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Controller -->
+    <script src="js/loading.js"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

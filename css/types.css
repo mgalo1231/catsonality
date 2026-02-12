@@ -1,0 +1,170 @@
+/* ===== Types Page Styles ===== */
+.types-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8rem 2rem 4rem;
+    min-height: 100vh;
+}
+
+.types-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.types-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.types-subtitle {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* 类型网格 */
+.types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+/* 类型卡片 */
+.type-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.type-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(254, 126, 177, 0.12);
+}
+
+.type-card-image {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.type-card-image img {
+    width: 120px;
+    height: auto;
+}
+
+.type-card-content {
+    text-align: center;
+}
+
+.type-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.type-name-en {
+    font-size: 0.875rem;
+    color: #999;
+    margin-bottom: 0.75rem;
+}
+
+.type-tagline {
+    font-size: 1rem;
+    color: #FE7EB1;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.type-desc {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: #666;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+/* 特征标签 */
+.type-traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.trait-tag {
+    padding: 0.25rem 0.75rem;
+    background: rgba(254, 126, 177, 0.1);
+    color: #FE7EB1;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* CTA区域 */
+.types-cta {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(254, 126, 177, 0.05);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 100%;
+}
+
+.types-cta p {
+    font-size: 1.125rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.cta-btn {
+    display: inline-block;
+    padding: 1rem 3rem;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cta-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .types-content {
+        padding: 6rem 1rem 3rem;
+    }
+
+    .types-title {
+        font-size: 1.5rem;
+    }
+
+    .types-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .type-card {
+        padding: 1.5rem;
+    }
+
+    .type-card-image img {
+        width: 100px;
+    }
+
+    .type-name {
+        font-size: 1.25rem;
+    }
+}

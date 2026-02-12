@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg">
+    <title>マイページ - Catsonality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mypage.css">
+    <link rel="stylesheet" href="css/loading.css">
+</head>
+<body>
+    <!-- 左上角固定Logo -->
+    <div class="logo-fixed">
+        <a href="index.html">
+            <img src="images/logo.png" alt="Catsonality Logo">
+        </a>
+    </div>
+
+    <!-- 右上角导航栏 -->
+    <header class="header">
+        <nav class="nav">
+            <a href="test.html" class="nav-link">ねこ性格診断</a>
+            <a href="types.html" class="nav-link">タイプ紹介</a>
+            <a href="community.html" class="nav-link">コミュニティ</a>
+            <a href="#" class="nav-link login-btn" id="logoutBtn">ログアウト</a>
+        </nav>
+    </header>
+
+    <main class="mypage-content">
+        <!-- 用户资料卡片 -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper">
+                    <img src="images/cats/ExplorerCat.png" alt="" class="profile-avatar" id="profileAvatar">
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name-row">
+                        <h1 class="profile-name" id="profileName">読み込み中...</h1>
+                        <button class="edit-profile-btn" id="editProfileBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            編集
+                        </button>
+                    </div>
+                    <span class="profile-type-label" id="profileTypeLabel">-</span>
+                    <p class="profile-joined">-</p>
+                </div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="statDiagnoses">0</span>
+                    <span class="stat-label">診断回数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statPosts">0</span>
+                    <span class="stat-label">投稿数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statLikes">0</span>
+                    <span class="stat-label">もらったいいね</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 标签导航 -->
+        <div class="mypage-tabs">
+            <button class="mypage-tab active" data-tab="history">診断履歴</button>
+            <button class="mypage-tab" data-tab="posts">投稿した内容</button>
+        </div>
+
+        <!-- 诊断历史 -->
+        <div class="tab-content active" id="historyContent">
+            <div class="history-list" id="historyList">
+                <!-- 由JS动态生成 -->
+            </div>
+            <div class="history-cta">
+                <a href="test.html" class="history-cta-btn">もう一度診断する</a>
+            </div>
+        </div>
+
+        <!-- 我的帖子 -->
+        <div class="tab-content" id="postsContent">
+            <div class="mypage-post-actions">
+                <button class="mypage-post-btn" id="mypagePostBtn">投稿する</button>
+            </div>
+            <div class="my-posts-grid posts-grid" id="myPostsGrid">
+                <!-- 由JS动态生成 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- 编辑资料弹窗 -->
+    <div class="edit-modal" id="editModal">
+        <div class="modal-overlay"></div>
+        <div class="edit-container">
+            <h2 class="edit-title">プロフィールを編集</h2>
+            <div class="edit-form">
+                <div class="edit-group edit-avatar-group">
+                    <label>アバター</label>
+                    <div class="edit-avatar-wrapper">
+                        <img src="images/cats/ExplorerCat.png" alt="" class="edit-avatar-preview" id="editAvatarPreview">
+                        <button type="button" class="edit-avatar-btn" id="editAvatarBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            変更
+                        </button>
+                        <input type="file" id="editAvatarInput" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                <div class="edit-group">
+                    <label for="editName">ニックネーム</label>
+                    <input type="text" id="editName" value="">
+                </div>
+            </div>
+            <div class="edit-actions">
+                <button class="edit-btn primary" id="editSave">保存</button>
+                <button class="edit-btn secondary" id="editCancel">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="modal-overlay"></div>
+        <div class="confirm-container">
+            <p class="confirm-text">この投稿を削除しますか？</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn danger" id="confirmDelete">削除する</button>
+                <button class="confirm-btn secondary" id="confirmCancel">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 投稿詳細モーダル（コミュニティと同デザイン） -->
+    <div class="post-modal" id="postDetailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="postDetailClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-content">
+                <!-- 左侧：图片 -->
+                <div class="modal-image">
+                    <img src="" alt="" id="postDetailImage">
+                </div>
+                <!-- 右侧：内容 -->
+                <div class="modal-info">
+                    <!-- 作者信息 -->
+                    <div class="modal-author">
+                        <img src="" alt="" class="author-avatar" id="postDetailAuthorAvatar">
+                        <div class="author-details">
+                            <span class="author-name" id="postDetailAuthorName"></span>
+                            <span class="author-type" id="postDetailAuthorType"></span>
+                        </div>
+                    </div>
+                    <!-- 帖子内容 -->
+                    <div class="modal-caption" id="postDetailCaption"></div>
+                    <!-- 发布时间 + 点赞 -->
+                    <div class="modal-date-row">
+                        <div class="modal-date" id="postDetailDate"></div>
+                        <button class="like-btn" id="postDetailLikeBtn" type="button">
+                            <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <span class="like-count" id="postDetailLikeCount">0</span>
+                        </button>
+                    </div>
+
+                    <!-- 编辑区域 -->
+                    <div class="post-detail-edit" id="postDetailEdit">
+                        <div class="edit-image-preview" id="postEditPreview">
+                            <span>画像を選択</span>
+                        </div>
+                        <input type="file" id="postEditImageInput" accept="image/*" hidden>
+                        <button class="post-edit-upload-btn" id="postEditUploadBtn">画像を変更</button>
+                        <textarea class="post-edit-caption" id="postEditCaption" placeholder="コメントを入力"></textarea>
+                    </div>
+
+                    <div class="post-detail-actions">
+                        <button class="post-detail-btn secondary" id="postDetailEditBtn">編集</button>
+                        <button class="post-detail-btn primary" id="postDetailSaveBtn">保存</button>
+                        <button class="post-detail-btn ghost" id="postDetailCancelBtn">キャンセル</button>
+                    </div>
+
+                    <!-- 评论区 -->
+                    <div class="modal-comments">
+                        <h3 class="comments-title">コメント</h3>
+                        <div class="comments-list" id="postDetailCommentsList">
+                            <!-- 评论由JS动态生成 -->
+                        </div>
+                        <!-- 评论输入 -->
+                        <div class="comment-input-wrapper">
+                            <input type="text" class="comment-input" id="postDetailCommentInput" placeholder="コメントを入力...">
+                            <button class="comment-submit" id="postDetailCommentSubmit">送信</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 直接投稿弹窗 -->
+    <div class="direct-post-modal" id="mypageDirectPostModal">
+        <div class="direct-post-overlay"></div>
+        <div class="direct-post-container">
+            <button class="direct-post-close" id="mypageDirectPostClose">&times;</button>
+            <h3 class="direct-post-title">コミュニティに投稿</h3>
+            <div class="direct-post-preview" id="mypageDirectPostPreview">
+                <span class="direct-post-placeholder">画像を選択</span>
+            </div>
+            <input type="file" id="mypageDirectPostImageInput" accept="image/*" hidden>
+            <button class="direct-post-upload-btn" id="mypageDirectPostUploadBtn">画像を選ぶ</button>
+            <textarea class="direct-post-caption" id="mypageDirectPostCaption" placeholder="コメントを入力（任意）"></textarea>
+            <div class="direct-post-actions">
+                <button class="direct-post-submit" id="mypageDirectPostSubmit">投稿する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Controller -->
+    <script src="js/loading.js"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/mypage.js"></script>
+</body>
+</html>

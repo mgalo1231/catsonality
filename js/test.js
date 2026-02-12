@@ -1,7 +1,8 @@
 // 当前页面状态
 let currentPage = 1;
-const totalPages = 6; // 增加了一页Profile设置
+let totalPages = 6; // 增加了一页Profile设置
 let isTransitioning = false; // 防止动画期间重复切换
+let hasProfilePage = true;
 
 // 存储用户的答案
 const answers = {};
@@ -24,11 +25,48 @@ const avatarPreview = document.getElementById('avatarPreview');
 const catNameInput = document.getElementById('catName');
 
 // 初始化
-function init() {
-    updateNavigation();
+async function init() {
+    await prepareLoggedInProfile();
+    updateQuestionNavigation();
     attachEventListeners();
     restoreAnsweredStates();
     initProfileHandlers();
+}
+
+// 登录用户跳过资料页
+async function prepareLoggedInProfile() {
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+
+        const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('username, avatar_url')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (profile) {
+            userProfile.name = profile.username || '';
+            userProfile.avatar = profile.avatar_url || null;
+        }
+
+        // 保存到 localStorage 以便结果页使用
+        if (userProfile.name || userProfile.avatar) {
+            localStorage.setItem('catsonalityProfile', JSON.stringify(userProfile));
+        } else {
+            localStorage.removeItem('catsonalityProfile');
+        }
+
+        // 隐藏资料页并调整总页数
+        const profilePage = document.querySelector('.profile-page');
+        if (profilePage) {
+            profilePage.style.display = 'none';
+        }
+        totalPages = 5;
+        hasProfilePage = false;
+    } catch (error) {
+        console.error('ログインユーザー取得エラー:', error);
+    }
 }
 
 // Profile页面事件处理
@@ -219,12 +257,12 @@ function goToPage(pageNum) {
     currentPage = pageNum;
 
     // 更新导航和指示器
-    updateNavigation();
+    updateQuestionNavigation();
     updateIndicator();
 }
 
 // 更新导航按钮显示
-function updateNavigation() {
+function updateQuestionNavigation() {
     // 上一页按钮
     if (currentPage === 1) {
         prevBtn.classList.remove('show');
@@ -235,14 +273,9 @@ function updateNavigation() {
     // 下一页按钮文字
     if (currentPage === totalPages) {
         nextBtnText.textContent = '診断結果を見る'; // 第6页是结果
-    } else if (currentPage === totalPages - 1) {
-        nextBtnText.textContent = '次へ'; // 第5页去第6页
     } else {
         nextBtnText.textContent = '次へ';
     }
-    
-    // 特殊处理：第6页是Profile设置，文字可以是“跳过”如果没有填写？
-    // 这里简化逻辑，最后一步总是“查看结果”，在JS里判断是否保存数据
 }
 
 // 更新分页指示器
@@ -250,7 +283,7 @@ function updateIndicator() {
     const indicatorContainer = document.querySelector('.page-indicator');
     
     // 如果是Profile页（第6页），隐藏进度条
-    if (currentPage === totalPages) {
+    if (hasProfilePage && currentPage === totalPages) {
         indicatorContainer.style.opacity = '0';
         indicatorContainer.style.pointerEvents = 'none';
     } else {
@@ -277,31 +310,25 @@ function goToPreviousPage() {
 
 // 前往下一页或查看结果
 function goToNextPage() {
-    // 检查当前页是否回答完毕（如果是问题页）
-    if (currentPage < totalPages) { // 1-5页是问题
-        // 这里可以加一个简单的检查，确保当前页每道题都答了
-        // 为了用户体验，可以在这里检查
-        // 计算当前页应有的题目ID范围
-        // Page 1: 1-3, Page 2: 4-6...
-        // 简单起见，我们在showResults里做最终检查，这里允许翻页？
-        // 为了严谨，还是在最后一步检查所有题目吧
-    }
-
     if (currentPage === totalPages) {
-        // 在最后一页（Profile页），显示结果
+        // 在最后一页，显示结果（showResults 内部会检查是否答完所有题目）
         showResults();
     } else {
-        // 如果是第5页跳第6页，先检查题目是否答完
-        if (currentPage === totalPages - 1) {
-            const totalQuestions = 15;
-            const answeredQuestions = Object.keys(answers).length;
-            if (answeredQuestions < totalQuestions) {
-                 alert(`まだ${totalQuestions - answeredQuestions}問回答していません。すべての質問に答えてください。`);
-                 return;
-            }
-        }
         goToPage(currentPage + 1);
     }
+}
+
+// 查找第一个未回答的题目所在页面
+function findFirstUnansweredPage() {
+    // 每页3道题：Page 1: Q1-3, Page 2: Q4-6, Page 3: Q7-9, Page 4: Q10-12, Page 5: Q13-15
+    for (let q = 1; q <= 15; q++) {
+        if (!answers[q]) {
+            // 计算该题目所在的页面
+            const page = Math.ceil(q / 3);
+            return { page, question: q };
+        }
+    }
+    return null; // 所有题目都已回答
 }
 
 // 显示结果
@@ -311,7 +338,24 @@ function showResults() {
     const answeredQuestions = Object.keys(answers).length;
 
     if (answeredQuestions < totalQuestions) {
-        alert(`まだ${totalQuestions - answeredQuestions}問回答していません。すべての質問に答えてください。`);
+        const unanswered = findFirstUnansweredPage();
+        if (unanswered) {
+            // 直接跳转到未回答的题目，不显示提示
+            goToPage(unanswered.page);
+            // 高亮未回答的题目
+            setTimeout(() => {
+                // 通过rating-circle的data-question找到对应的question-item
+                const ratingCircle = document.querySelector(`.rating-circle[data-question="${unanswered.question}"]`);
+                const questionItem = ratingCircle?.closest('.question-item');
+                if (questionItem) {
+                    questionItem.classList.add('highlight-unanswered');
+                    questionItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        questionItem.classList.remove('highlight-unanswered');
+                    }, 2000);
+                }
+            }, 600);
+        }
         return;
     }
 
@@ -405,10 +449,11 @@ function showResults() {
 
     console.log("Matched Type:", matchedType);
 
-    // 保存结果并跳转
+    // 保存结果并跳转（包含用户填写的名字和头像）
     localStorage.setItem('catsonalityResult', JSON.stringify({
         scores: scores,
-        type: matchedType
+        type: matchedType,
+        userProfile: userProfile
     }));
 
     // 跳转到结果页面

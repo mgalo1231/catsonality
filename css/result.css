@@ -2,12 +2,11 @@
 
 .result-content {
     width: 100%;
-    min-height: calc(100vh - 5rem);
+    min-height: 100vh;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 3% 2% 5%;
-    background: linear-gradient(180deg, #FFF8FA 0%, #FFFFFF 30%, #FFFBFC 100%);
+    padding: 6rem 2% 5%;
     overflow-y: auto;
 }
 
@@ -525,32 +524,31 @@
     transition: all 0.3s ease;
     border: 2px solid transparent;
     cursor: pointer;
-    font-family: "Kiwi Maru", sans-serif;
     font-weight: 400;
 }
 
 .retake-btn {
     background-color: #ffffff;
-    color: #FE7EB1;
-    border-color: #FE7EB1;
+    color: var(--primary);
+    border-color: var(--primary);
 }
 
 .retake-btn:hover {
-    background-color: #fff5f8;
+    background-color: var(--primary-soft);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(254, 126, 177, 0.15);
 }
 
 .share-btn {
-    background-color: #FE7EB1;
+    background-color: var(--primary);
     color: #ffffff;
-    border-color: #FE7EB1;
+    border-color: var(--primary);
 }
 
 .share-btn:hover {
-    background-color: #ff6b9d;
+    background-color: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(254, 126, 177, 0.3);
+    box-shadow: 0 5px 20px var(--primary-shadow);
 }
 
 /* ===== 分享模态框 ===== */
@@ -657,25 +655,25 @@
 }
 
 .download-btn {
-    background: #FE7EB1;
+    background: var(--primary);
     color: #fff;
-    border-color: #FE7EB1;
+    border-color: var(--primary);
 }
 
 .download-btn:hover {
-    background: #ff6b9d;
+    background: var(--primary-dark);
     transform: translateY(-2px);
 }
 
 .copy-link-btn {
     background: #fff;
-    color: #666;
-    border-color: #ddd;
+    color: var(--primary);
+    border-color: var(--primary);
 }
 
 .copy-link-btn:hover {
-    background: #f9f9f9;
-    border-color: #ccc;
+    background: var(--primary-soft);
+    border-color: var(--primary);
     transform: translateY(-2px);
 }
 
@@ -733,7 +731,7 @@
 
 @media (max-width: 480px) {
     .result-content {
-        padding: 2% 3% 8%;
+        padding: 5rem 3% 8%;
     }
     
     .result-export-area {
@@ -848,4 +846,272 @@
     .qrcode-hint {
         font-size: 0.6rem;
     }
+}
+
+/* ===== 发布到社区按钮 ===== */
+.post-btn {
+    background: #fff;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.post-btn:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ===== 发布弹窗 ===== */
+.post-modal,
+.login-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+}
+
+.post-modal.active,
+.login-prompt.active {
+    display: block;
+}
+
+.post-modal-overlay,
+.login-prompt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.post-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.post-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.post-modal-close:hover {
+    background: #eee;
+}
+
+.post-modal-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #3a3a3a;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.post-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f5f5;
+    margin-bottom: 1rem;
+}
+
+.post-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post-change-image-btn {
+    position: absolute;
+    bottom: 0.8rem;
+    right: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    color: #666;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.post-change-image-btn:hover {
+    background: #fff;
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.post-change-image-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.post-form {
+    margin-bottom: 1.5rem;
+}
+
+.post-caption-input {
+    width: 100%;
+    height: 100px;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.post-caption-input:focus {
+    border-color: var(--primary);
+}
+
+.post-actions {
+    text-align: center;
+}
+
+.submit-post-btn {
+    padding: 0.8rem 3rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-post-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.submit-post-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.post-skip-link {
+    text-align: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.post-skip-link a {
+    color: #999;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.post-skip-link a:hover {
+    color: var(--primary);
+}
+
+/* ===== 登录提示弹窗 ===== */
+.login-prompt-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.login-prompt-content p {
+    font-size: 1rem;
+    color: #4a4a4a;
+    margin-bottom: 1.5rem;
+}
+
+.login-prompt-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.login-prompt-register {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.login-prompt-register a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-prompt-register a:hover {
+    text-decoration: underline;
+}
+
+.login-btn-primary {
+    padding: 0.7rem 1.5rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.login-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.login-btn-secondary {
+    padding: 0.7rem 1.5rem;
+    background: #fff;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.login-btn-secondary:hover {
+    border-color: #ccc;
 }

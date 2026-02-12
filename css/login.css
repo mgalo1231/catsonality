@@ -2,12 +2,16 @@
 
 .login-content {
     width: 100%;
-    min-height: calc(100vh - 5rem);
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background-color: #ffffff;
+}
+
+/* 导航当前页高亮 */
+.nav-link.active {
+    color: #FE7EB1;
 }
 
 .login-card {
@@ -44,7 +48,6 @@
     color: #4a4a4a;
     font-weight: normal;
     margin: 0;
-    font-family: "Kiwi Maru", sans-serif;
     animation: fadeIn 0.4s ease;
 }
 
@@ -71,7 +74,6 @@
     padding: 0.6rem 0;
     border-radius: 999px;
     font-size: 0.9rem;
-    font-family: "Kiwi Maru", sans-serif;
     color: #888;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -79,8 +81,8 @@
 
 .toggle-btn.active {
     background-color: #ffffff;
-    color: #FE7EB1;
-    border: 1.5px solid #FE7EB1;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
@@ -200,14 +202,13 @@
     border: none;
     background-color: #f5f5f5;
     font-size: 1rem;
-    font-family: "Kiwi Maru", sans-serif;
     outline: none;
     transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     background-color: #ffffff;
-    box-shadow: 0 0 0 2px #FE7EB1;
+    box-shadow: 0 0 0 2px var(--primary);
 }
 
 /* 提交按钮 */
@@ -217,19 +218,18 @@
     padding: 1rem;
     border-radius: 999px;
     border: none;
-    background-color: #E98DB3;
+    background-color: var(--primary);
     color: #ffffff;
     font-size: 1.1rem;
-    font-family: "Kiwi Maru", sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(233, 141, 179, 0.3);
+    box-shadow: 0 4px 12px var(--primary-shadow);
 }
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(233, 141, 179, 0.4);
-    background-color: #ff9ac0;
+    box-shadow: 0 6px 16px var(--primary-shadow);
+    background-color: var(--primary-light);
 }
 
 .submit-btn:active {

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg">
+    <title>コミュニティ - Catsonality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/community.css">
+    <link rel="stylesheet" href="css/loading.css">
+</head>
+<body>
+    <!-- 左上角固定Logo -->
+    <div class="logo-fixed">
+        <a href="index.html">
+            <img src="images/logo.png" alt="Catsonality Logo">
+        </a>
+    </div>
+
+    <!-- 右上角导航栏 -->
+    <header class="header">
+        <nav class="nav">
+            <a href="test.html" class="nav-link">ねこ性格診断</a>
+            <a href="types.html" class="nav-link">タイプ紹介</a>
+            <a href="community.html" class="nav-link active">コミュニティ</a>
+            <a href="login.html" class="nav-link login-btn">ログイン</a>
+        </nav>
+    </header>
+
+    <main class="community-content">
+        <!-- 页面标题 -->
+        <div class="community-header">
+            <h1 class="community-title">コミュニティ</h1>
+            <p class="community-subtitle">猫好きが集まる場所</p>
+        </div>
+
+        <!-- 瀑布流帖子列表 -->
+        <div class="posts-grid" id="postsGrid">
+            <!-- 帖子由JS动态生成 -->
+        </div>
+    </main>
+
+    <!-- 帖子详情弹窗 -->
+    <div class="post-modal" id="postModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="modalClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-content">
+                <!-- 左侧：图片 -->
+                <div class="modal-image">
+                    <img src="" alt="" id="modalImage">
+                </div>
+                <!-- 右侧：内容 -->
+                <div class="modal-info">
+                    <!-- 作者信息 -->
+                    <div class="modal-author">
+                        <img src="" alt="" class="author-avatar" id="modalAuthorAvatar">
+                        <div class="author-details">
+                            <span class="author-name" id="modalAuthorName"></span>
+                            <span class="author-type" id="modalAuthorType"></span>
+                        </div>
+                    </div>
+                    <!-- 帖子内容 -->
+                    <div class="modal-caption" id="modalCaption"></div>
+                    <!-- 发布时间 + 点赞 -->
+                    <div class="modal-date-row">
+                        <div class="modal-date" id="modalDate"></div>
+                        <button class="like-btn" id="modalLikeBtn">
+                            <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <span class="like-count" id="modalLikeCount">0</span>
+                        </button>
+                    </div>
+                    <!-- 编辑区域（本人投稿时显示） -->
+                    <div class="modal-edit" id="modalEdit">
+                        <div class="edit-image-preview" id="modalEditPreview">
+                            <span class="direct-post-placeholder">画像を選択</span>
+                        </div>
+                        <input type="file" id="modalEditImageInput" accept="image/*" hidden>
+                        <button class="modal-edit-upload-btn" id="modalEditUploadBtn">画像を選ぶ</button>
+                        <textarea class="modal-edit-caption" id="modalEditCaption" placeholder="コメントを入力（任意）"></textarea>
+                        <div class="modal-edit-actions">
+                            <button class="modal-edit-btn secondary" id="modalEditCancel">キャンセル</button>
+                            <button class="modal-edit-btn primary" id="modalEditSave">保存</button>
+                        </div>
+                    </div>
+                    <div class="modal-owner-actions" id="modalOwnerActions">
+                        <button class="modal-owner-btn secondary" id="modalOwnerEdit">編集</button>
+                        <button class="modal-owner-btn danger" id="modalOwnerDelete">削除</button>
+                    </div>
+                    <!-- 评论区 -->
+                    <div class="modal-comments">
+                        <h3 class="comments-title">コメント</h3>
+                        <div class="comments-list" id="modalCommentsList">
+                            <!-- 评论由JS动态生成 -->
+                        </div>
+                        <!-- 评论输入 -->
+                        <div class="comment-input-wrapper">
+                            <input type="text" class="comment-input" id="commentInput" placeholder="コメントを入力...">
+                            <button class="comment-submit" id="commentSubmit">送信</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 直接投稿弹窗 -->
+    <div class="direct-post-modal" id="directPostModal">
+        <div class="direct-post-overlay"></div>
+        <div class="direct-post-container">
+            <button class="direct-post-close" id="directPostClose">&times;</button>
+            <h3 class="direct-post-title">コミュニティに投稿</h3>
+            <div class="direct-post-preview" id="directPostPreview">
+                <span class="direct-post-placeholder">画像を選択</span>
+            </div>
+            <input type="file" id="directPostImageInput" accept="image/*" hidden>
+            <button class="direct-post-upload-btn" id="directPostUploadBtn">画像を選ぶ</button>
+            <textarea class="direct-post-caption" id="directPostCaption" placeholder="コメントを入力（任意）"></textarea>
+            <div class="direct-post-actions">
+                <button class="direct-post-submit" id="directPostSubmit">投稿する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 悬浮投稿按钮 -->
+    <button class="floating-post-btn" id="communityPostBtn">投稿する</button>
+
+    <!-- 登录提示弹窗 -->
+    <div class="login-prompt-modal" id="loginPromptModal">
+        <div class="modal-overlay"></div>
+        <div class="prompt-container">
+            <p class="prompt-text">この機能を使うにはログインが必要です</p>
+            <div class="prompt-actions">
+                <a href="login.html" class="prompt-btn primary">ログイン</a>
+                <button class="prompt-btn secondary" id="promptClose">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Controller -->
+    <script src="js/loading.js"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/community.js"></script>
+</body>
+</html>

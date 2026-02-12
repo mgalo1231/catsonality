@@ -3,28 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg">
     <title>Catsonality - ねこ性格診断</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/loading.css">
 </head>
 <body>
-    <header class="header">
-        <div class="header-container">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="images/logo.png" alt="Catsonality Logo">
-                </a>
-            </div>
-            <nav class="nav">
-                <a href="#" class="nav-link">ねこ性格診断</a>
-                <a href="#" class="nav-link">タイプ紹介</a>
-                <a href="#" class="nav-link">コミュニティ</a>
-                <a href="#" class="nav-link">お問い合わせ</a>
-                <a href="login.html" class="nav-link">ログイン</a>
-            </nav>
+    <!-- 漂浮猫咪装饰 -->
+    <div class="floating-cats">
+        <div class="float-cat cat-1" data-name="探検家猫">
+            <img src="images/cats-svg/ExplorerCat.svg" alt="Explorer Cat">
         </div>
+        <div class="float-cat cat-2" data-name="癒し猫">
+            <img src="images/cats-svg/HealerCat.svg" alt="Healer Cat">
+        </div>
+        <div class="float-cat cat-3" data-name="リーダー猫">
+            <img src="images/cats-svg/LeaderCat.svg" alt="Leader Cat">
+        </div>
+        <div class="float-cat cat-4" data-name="哲学者猫">
+            <img src="images/cats-svg/ThinkerCat.svg" alt="Thinker Cat">
+        </div>
+        <div class="float-cat cat-5" data-name="冒険家猫">
+            <img src="images/cats-svg/WildCat.svg" alt="Wild Cat">
+        </div>
+        <div class="float-cat cat-6" data-name="隠者猫">
+            <img src="images/cats-svg/SolitaryCat.svg" alt="Solitary Cat">
+        </div>
+        <div class="float-cat cat-7" data-name="王子猫">
+            <img src="images/cats-svg/RoyalCat.svg" alt="Royal Cat">
+        </div>
+        <div class="float-cat cat-8" data-name="守護猫">
+            <img src="images/cats-svg/GuardianCat.svg" alt="Guardian Cat">
+        </div>
+    </div>
+
+    <!-- 左上角固定Logo -->
+    <div class="logo-fixed">
+        <a href="index.html">
+            <img src="images/logo.svg" alt="Catsonality Logo">
+        </a>
+    </div>
+
+    <!-- 右上角导航栏 -->
+    <header class="header">
+        <nav class="nav">
+            <a href="test.html" class="nav-link">ねこ性格診断</a>
+            <a href="types.html" class="nav-link">タイプ紹介</a>
+            <a href="community.html" class="nav-link">コミュニティ</a>
+            <a href="login.html" class="nav-link login-btn">ログイン</a>
+        </nav>
     </header>
 
     <main class="main-content">
@@ -38,6 +68,56 @@
             <a href="test.html" class="cta-button">やってみるにゃ〜</a>
         </div>
     </main>
+
+    <!-- 社区预览 -->
+    <section class="community-preview">
+        <div class="preview-container">
+            <h2 class="preview-title">みんなの診断結果</h2>
+            <p class="preview-subtitle">コミュニティで他の猫ちゃんの結果をチェック</p>
+            
+            <div class="preview-grid">
+                <div class="preview-card">
+                    <img src="images/sample/IMG_1276.JPG" alt="" class="preview-image">
+                    <div class="preview-info">
+                        <span class="preview-type">探検家猫</span>
+                        <p class="preview-caption">うちの子は探検家猫でした！</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="images/sample/IMG_6335.JPG" alt="" class="preview-image">
+                    <div class="preview-info">
+                        <span class="preview-type">癒し猫</span>
+                        <p class="preview-caption">癒し猫タイプでした...</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="images/sample/IMG_6533.JPG" alt="" class="preview-image">
+                    <div class="preview-info">
+                        <span class="preview-type">リーダー猫</span>
+                        <p class="preview-caption">リーダー猫！確かに...</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="images/sample/IMG_9452.jpeg" alt="" class="preview-image">
+                    <div class="preview-info">
+                        <span class="preview-type">王子猫</span>
+                        <p class="preview-caption">王子猫でした！</p>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="community.html" class="preview-more-btn">もっと見る</a>
+        </div>
+    </section>
+    
+    <link rel="stylesheet" href="css/index-preview.css">
+    
+    <!-- Loading Controller -->
+    <script src="js/loading.js"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
-
