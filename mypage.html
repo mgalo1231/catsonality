@@ -178,19 +178,22 @@
                     </div>
 
                     <!-- 编辑区域 -->
-                    <div class="post-detail-edit" id="postDetailEdit">
+                    <div class="modal-edit" id="postDetailEdit">
                         <div class="edit-image-preview" id="postEditPreview">
-                            <span>画像を選択</span>
+                            <span class="direct-post-placeholder">画像を選択</span>
                         </div>
                         <input type="file" id="postEditImageInput" accept="image/*" hidden>
-                        <button class="post-edit-upload-btn" id="postEditUploadBtn">画像を変更</button>
-                        <textarea class="post-edit-caption" id="postEditCaption" placeholder="コメントを入力"></textarea>
+                        <button class="modal-edit-upload-btn" id="postEditUploadBtn">画像を選ぶ</button>
+                        <textarea class="modal-edit-caption" id="postEditCaption" placeholder="コメントを入力（任意）"></textarea>
+                        <div class="modal-edit-actions">
+                            <button class="modal-edit-btn secondary" id="postDetailCancelBtn">キャンセル</button>
+                            <button class="modal-edit-btn primary" id="postDetailSaveBtn">保存</button>
+                        </div>
                     </div>
 
-                    <div class="post-detail-actions">
-                        <button class="post-detail-btn secondary" id="postDetailEditBtn">編集</button>
-                        <button class="post-detail-btn primary" id="postDetailSaveBtn">保存</button>
-                        <button class="post-detail-btn ghost" id="postDetailCancelBtn">キャンセル</button>
+                    <div class="modal-owner-actions" id="postDetailOwnerActions">
+                        <button class="modal-owner-btn secondary" id="postDetailEditBtn">編集</button>
+                        <button class="modal-owner-btn danger" id="postDetailDeleteBtn">削除</button>
                     </div>
 
                     <!-- 评论区 -->

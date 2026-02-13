@@ -283,6 +283,7 @@ function renderMyPosts() {
     if (!myPostsGrid) return;
 
     if (userPosts.length === 0) {
+        if (mypagePostBtn) mypagePostBtn.style.display = 'none';
         myPostsGrid.innerHTML = `
             <div class="empty-state" style="grid-column: 1 / -1;">
                 <p>まだ投稿がありません</p>
@@ -295,6 +296,8 @@ function renderMyPosts() {
         bindMyDirectPostButtons();
         return;
     }
+    
+    if (mypagePostBtn) mypagePostBtn.style.display = '';
 
     myPostsGrid.innerHTML = userPosts.map(post => {
         const catType = userProfile?.primary_cat_type || 'explorer';
@@ -377,6 +380,13 @@ function initModals() {
     postDetailEditBtn?.addEventListener('click', () => togglePostEdit(true));
     postDetailCancelBtn?.addEventListener('click', () => togglePostEdit(false));
     postDetailSaveBtn?.addEventListener('click', savePostEdits);
+    document.getElementById('postDetailDeleteBtn')?.addEventListener('click', () => {
+        if (currentDetailPost) {
+            const postId = currentDetailPost.id;
+            closePostDetail();
+            confirmDeletePost(postId);
+        }
+    });
     postEditUploadBtn?.addEventListener('click', () => postEditImageInput?.click());
     postEditImageInput?.addEventListener('change', handlePostEditImageChange);
     postDetailLikeBtn?.addEventListener('click', handlePostDetailLike);
@@ -527,10 +537,22 @@ function openPostDetail(postId, editMode) {
     postEditCaption.value = post.caption || '';
     postEditImageData = null;
     if (postEditPreview) {
-        postEditPreview.innerHTML = post.share_image_url
-            ? `<img src="${post.share_image_url}" alt="">`
-            : '<span>画像を選択</span>';
+        if (post.share_image_url) {
+            postEditPreview.innerHTML = `<img src="${post.share_image_url}" alt="">`;
+        } else {
+            postEditPreview.innerHTML = '<span class="direct-post-placeholder">画像を選択</span>';
+        }
     }
+
+    // 确保显示区域可见
+    const caption = document.getElementById('postDetailCaption');
+    const imageContainer = document.getElementById('postDetailImage')?.closest('.modal-image');
+    const dateRow = postDetailModal?.querySelector('.modal-date-row');
+    const ownerActions = document.getElementById('postDetailOwnerActions');
+    if (caption) caption.style.display = 'block';
+    if (imageContainer) imageContainer.style.display = 'block';
+    if (dateRow) dateRow.style.display = 'flex';
+    if (ownerActions) ownerActions.classList.add('active');
 
     togglePostEdit(!!editMode);
     postDetailModal.classList.add('active');
@@ -679,16 +701,43 @@ async function handlePostDetailLike() {
 
 function togglePostEdit(isEdit) {
     if (!postDetailEdit) return;
+    
+    const caption = document.getElementById('postDetailCaption');
+    const imageContainer = document.getElementById('postDetailImage')?.closest('.modal-image');
+    const dateRow = postDetailModal?.querySelector('.modal-date-row');
+    const ownerActions = document.getElementById('postDetailOwnerActions');
+    
     if (isEdit) {
+        // 编辑模式：隐藏显示区域，显示编辑区域
         postDetailEdit.classList.add('active');
-        postDetailEditBtn.style.display = 'none';
-        postDetailSaveBtn.style.display = 'inline-block';
-        postDetailCancelBtn.style.display = 'inline-block';
+        if (ownerActions) ownerActions.classList.remove('active');
+        
+        // 确保编辑表单的值是最新的
+        if (postEditCaption && currentDetailPost) {
+            postEditCaption.value = currentDetailPost.caption || '';
+        }
+        
+        // 隐藏显示区域
+        if (caption) caption.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+        if (dateRow) dateRow.style.display = 'none';
+        
+        // 聚焦到 textarea
+        setTimeout(() => {
+            if (postEditCaption) {
+                postEditCaption.focus();
+                const length = postEditCaption.value.length;
+                postEditCaption.setSelectionRange(length, length);
+            }
+        }, 100);
     } else {
+        // 非编辑模式：显示显示区域，隐藏编辑区域
         postDetailEdit.classList.remove('active');
-        postDetailEditBtn.style.display = 'inline-block';
-        postDetailSaveBtn.style.display = 'none';
-        postDetailCancelBtn.style.display = 'none';
+        
+        if (caption) caption.style.display = 'block';
+        if (imageContainer) imageContainer.style.display = 'block';
+        if (dateRow) dateRow.style.display = 'flex';
+        if (ownerActions) ownerActions.classList.add('active');
     }
 }
 

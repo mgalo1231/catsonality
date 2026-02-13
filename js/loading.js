@@ -1,56 +1,16 @@
 // ===== Loading Page Controller =====
 
-/**
- * 页面加载控制器
- * 在页面切换时显示加载动画，直到内容加载完成
- */
+(function() {
+    const MIN_DISPLAY_TIME = 500;
+    const MAX_DISPLAY_TIME = 8000; // 安全超时：最多8秒
+    let startTime = Date.now();
+    let overlay = null;
 
-class LoadingController {
-    constructor() {
-        this.loadingOverlay = null;
-        this.minDisplayTime = 500; // 最小显示时间（毫秒），避免闪烁
-        this.startTime = Date.now();
-        this.isPageTransition = false;
-        
-        this.init();
-    }
-
-    init() {
-        // 创建 loading overlay
-        this.createLoadingOverlay();
-        
-        // 监听页面加载完成
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.handlePageLoad();
-            });
-        } else {
-            // 如果 DOM 已经加载完成
-            this.handlePageLoad();
-        }
-
-        // 监听页面卸载（用于页面切换）
-        window.addEventListener('beforeunload', () => {
-            this.show();
-        });
-
-        // 监听所有链接点击（页面内导航）
-        this.setupLinkInterception();
-    }
-
-    createLoadingOverlay() {
-        // 检查是否已存在 loading overlay
-        let overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            this.loadingOverlay = overlay;
-            return;
-        }
-
-        // 创建 loading overlay
+    // 立即创建 loading overlay
+    function createOverlay() {
         overlay = document.createElement('div');
         overlay.id = 'loadingOverlay';
         overlay.className = 'loading-overlay';
-        
         overlay.innerHTML = `
             <div class="loading-container">
                 <div class="loading-logo">
@@ -67,85 +27,70 @@ class LoadingController {
             </div>
         `;
 
-        document.body.appendChild(overlay);
-        this.loadingOverlay = overlay;
-    }
-
-    show() {
-        if (this.loadingOverlay) {
-            this.loadingOverlay.classList.remove('hidden');
-            this.startTime = Date.now();
-        }
-    }
-
-    hide() {
-        if (!this.loadingOverlay) return;
-
-        const elapsed = Date.now() - this.startTime;
-        const remainingTime = Math.max(0, this.minDisplayTime - elapsed);
-
-        setTimeout(() => {
-            if (this.loadingOverlay) {
-                this.loadingOverlay.classList.add('hidden');
-            }
-        }, remainingTime);
-    }
-
-    handlePageLoad() {
-        // 等待所有资源加载完成
-        if (document.readyState === 'complete') {
-            this.hide();
+        if (document.body) {
+            document.body.appendChild(overlay);
         } else {
-            window.addEventListener('load', () => {
-                this.hide();
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.appendChild(overlay);
             });
         }
     }
 
-    setupLinkInterception() {
-        // 拦截所有内部链接点击
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (!link) return;
+    function hide() {
+        if (!overlay) return;
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, MIN_DISPLAY_TIME - elapsed);
 
-            const href = link.getAttribute('href');
-            
-            // 只拦截内部链接（相对路径或同域）
-            if (href && 
-                !href.startsWith('#') && 
-                !href.startsWith('javascript:') &&
-                !href.startsWith('mailto:') &&
-                !href.startsWith('tel:') &&
-                !link.hasAttribute('target') &&
-                !link.hasAttribute('download')) {
-                
-                // 检查是否是外部链接
-                try {
-                    const url = new URL(href, window.location.origin);
-                    if (url.origin === window.location.origin || href.startsWith('/') || !href.includes('://')) {
-                        // 内部链接，显示 loading
-                        this.show();
-                    }
-                } catch (e) {
-                    // 相对路径，显示 loading
-                    this.show();
-                }
+        setTimeout(() => {
+            if (overlay) {
+                overlay.classList.add('hidden');
             }
-        });
+        }, delay);
     }
-}
 
-// 初始化 loading controller
-let loadingController;
+    function show() {
+        if (!overlay) return;
+        overlay.classList.remove('hidden');
+        startTime = Date.now();
+    }
 
-// 页面加载时初始化
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        loadingController = new LoadingController();
+    // 立即创建
+    createOverlay();
+
+    // 安全超时：无论如何，最多显示 MAX_DISPLAY_TIME 后自动隐藏
+    setTimeout(() => { hide(); }, MAX_DISPLAY_TIME);
+
+    // 拦截内部链接点击，显示 loading
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        if (href && 
+            !href.startsWith('#') && 
+            !href.startsWith('javascript:') &&
+            !href.startsWith('mailto:') &&
+            !href.startsWith('tel:') &&
+            !link.hasAttribute('target') &&
+            !link.hasAttribute('download')) {
+            try {
+                const url = new URL(href, window.location.origin);
+                if (url.origin === window.location.origin || !href.includes('://')) {
+                    show();
+                }
+            } catch (e) {
+                show();
+            }
+        }
     });
-} else {
-    loadingController = new LoadingController();
-}
 
-// 导出供其他脚本使用
-window.loadingController = loadingController;
+    // 导出全局 API
+    window.loadingController = { hide, show };
+
+    // 默认行为：window.load 时自动隐藏（如果页面脚本没有主动调用 hide）
+    window.addEventListener('load', () => {
+        // 延迟一下再隐藏，给异步数据加载一点缓冲
+        // 如果页面脚本已经手动调用了 hide()，重复调用也无副作用
+        setTimeout(() => { hide(); }, 300);
+    });
+})();

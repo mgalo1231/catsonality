@@ -123,6 +123,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 document.addEventListener('DOMContentLoaded', () => {
     updateNavigation();
     updateHeaderOverlay();
+    updateFloatingCatsVisibility();
 });
 
 // ===== ナビの背景制御 =====
@@ -136,7 +137,30 @@ function updateHeaderOverlay() {
 
 window.addEventListener('scroll', () => {
     updateHeaderOverlay();
+    updateFloatingCatsVisibility();
 });
+
+// ===== 浮动小猫显示控制 =====
+function updateFloatingCatsVisibility() {
+    const floatingCats = document.querySelector('.floating-cats');
+    if (!floatingCats) return;
+    
+    // 获取主内容区域（第一屏）的高度
+    const mainContent = document.querySelector('.main-content');
+    if (!mainContent) return;
+    
+    const mainContentBottom = mainContent.offsetTop + mainContent.offsetHeight;
+    const scrollPosition = window.scrollY;
+    
+    // 如果滚动超过主内容区域，隐藏小猫
+    if (scrollPosition > mainContentBottom - window.innerHeight * 0.3) {
+        floatingCats.style.opacity = '0';
+        floatingCats.style.pointerEvents = 'none';
+    } else {
+        floatingCats.style.opacity = '1';
+        floatingCats.style.pointerEvents = 'none';
+    }
+}
 
 // ===== ログインが必要な機能のチェック =====
 async function requireAuth(callback) {

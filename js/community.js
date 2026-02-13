@@ -46,21 +46,34 @@ let directPostImageData = null;
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', async () => {
-    // ログイン状態を確認
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    currentUser = user;
+    try {
+        // ログイン状態を確認
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        currentUser = user;
 
-    // 用户点赞记录を読み込む
-    if (currentUser) {
-        await loadUserLikes();
+        // 用户点赞记录を読み込む
+        if (currentUser) {
+            await loadUserLikes();
+        }
+
+        // 投稿を読み込む
+        await loadPosts();
+        
+        // UIを初期化
+        initModalEvents();
+        initDirectPost();
+        
+        // 数据加载完成后，隐藏 loading
+        if (window.loadingController) {
+            window.loadingController.hide();
+        }
+    } catch (error) {
+        console.error('ページ初期化エラー:', error);
+        // 出错也要隐藏 loading
+        if (window.loadingController) {
+            window.loadingController.hide();
+        }
     }
-
-    // 投稿を読み込む
-    await loadPosts();
-    
-    // UIを初期化
-    initModalEvents();
-    initDirectPost();
 });
 
 // ===== 用户点赞记录読み込み =====
@@ -187,7 +200,10 @@ function renderPosts(postsToRender) {
                     <p class="post-caption">${post.caption || ''}</p>
                     <div class="post-author">
                         <img src="${avatarUrl}" alt="" class="post-avatar">
-                        <span class="post-author-name">${profile.username || '匿名'}</span>
+                        <div class="post-author-info">
+                            <span class="post-author-name">${profile.username || '匿名'}</span>
+                            <span class="post-date">${formatDate(post.created_at)}</span>
+                        </div>
                     </div>
                     <div class="post-footer">
                         <button class="card-like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">
