@@ -361,7 +361,19 @@ function showResults() {
 
     // 保存 Profile 数据到 localStorage
     if (userProfile.name || userProfile.avatar) {
-        localStorage.setItem('catsonalityProfile', JSON.stringify(userProfile));
+        try {
+            localStorage.setItem('catsonalityProfile', JSON.stringify(userProfile));
+        } catch (e) {
+            console.warn('Profile保存時にlocalStorage容量不足:', e);
+            // 容量不足の場合、古いデータを削除して再試行
+            localStorage.removeItem('catsonalityResult');
+            localStorage.removeItem('catsonalityProfile');
+            try {
+                localStorage.setItem('catsonalityProfile', JSON.stringify(userProfile));
+            } catch (e2) {
+                console.error('Profile保存失敗:', e2);
+            }
+        }
     } else {
         // 清除旧数据
         localStorage.removeItem('catsonalityProfile');
@@ -449,12 +461,26 @@ function showResults() {
 
     console.log("Matched Type:", matchedType);
 
-    // 保存结果并跳转（包含用户填写的名字和头像）
-    localStorage.setItem('catsonalityResult', JSON.stringify({
-        scores: scores,
-        type: matchedType,
-        userProfile: userProfile
-    }));
+    // 保存结果并跳转（userProfileは別途catsonalityProfileに保存済み）
+    try {
+        localStorage.setItem('catsonalityResult', JSON.stringify({
+            scores: scores,
+            type: matchedType
+        }));
+    } catch (e) {
+        // localStorage容量不足の場合、古いデータを削除して再試行
+        console.warn('localStorage容量不足、古いデータを削除します:', e);
+        localStorage.removeItem('catsonalityResult');
+        localStorage.removeItem('catsonalityProfile');
+        try {
+            localStorage.setItem('catsonalityResult', JSON.stringify({
+                scores: scores,
+                type: matchedType
+            }));
+        } catch (e2) {
+            console.error('localStorage保存失敗:', e2);
+        }
+    }
 
     // 跳转到结果页面
     window.location.href = `result.html?type=${matchedType}`;

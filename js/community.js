@@ -17,6 +17,12 @@ let posts = [];
 let currentUser = null;
 let userLikes = new Set(); // 用户点赞过的帖子ID集合
 
+// ===== ページネーション設定 =====
+const POSTS_PER_PAGE = 12;
+let currentPage = 0;
+let isLoadingMore = false;
+let hasMorePosts = true;
+
 // ===== DOM要素 =====
 const postsGrid = document.getElementById('postsGrid');
 const postModal = document.getElementById('postModal');
@@ -46,22 +52,41 @@ let directPostImageData = null;
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // ログイン状態を確認
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        currentUser = user;
+    // 非同期データ読み込みがあるため、手動でloadingを制御する
+    if (window.loadingController) {
+        window.loadingController.claim();
+    }
 
-        // 用户点赞记录を読み込む
+    try {
+        // ログイン状態の確認と投稿の読み込みを並列実行
+        const [authResult, postsResult] = await Promise.all([
+            supabaseClient.auth.getUser(),
+            loadPostsPage(0)
+        ]);
+
+        currentUser = authResult.data?.user || null;
+
+        // ユーザーがログイン済みなら点赞記録を読み込む（バックグラウンド）
         if (currentUser) {
-            await loadUserLikes();
+            loadUserLikes().then(() => {
+                // 点赞状態を反映するために再描画
+                updateLikeStatesInUI();
+            });
         }
 
-        // 投稿を読み込む
-        await loadPosts();
+        // 投稿を表示
+        posts = postsResult || [];
+        if (posts.length === 0) {
+            showEmptyState();
+            bindDirectPostButtons();
+        } else {
+            renderPosts(posts);
+        }
         
         // UIを初期化
         initModalEvents();
         initDirectPost();
+        initInfiniteScroll();
         
         // 数据加载完成后，隐藏 loading
         if (window.loadingController) {
@@ -118,46 +143,99 @@ async function applyLikeCounts(postList) {
     }
 }
 
-// ===== 投稿読み込み =====
-async function loadPosts() {
+// ===== 投稿読み込み（ページネーション対応） =====
+async function loadPostsPage(page) {
     try {
-        let query = supabaseClient
+        const from = page * POSTS_PER_PAGE;
+        const to = from + POSTS_PER_PAGE - 1;
+
+        const { data, error } = await supabaseClient
             .from('posts')
             .select(`
-                *,
+                id, user_id, share_image_url, caption, likes_count, created_at, result_id,
                 profiles:user_id (
                     username,
                     avatar_url,
                     primary_cat_type
                 )
-            `);
-
-        // 並び順（likes_countは後で再計算するためcreated_atで取得）
-        query = query.order('created_at', { ascending: false });
-
-        const { data, error } = await query;
+            `)
+            .order('created_at', { ascending: false })
+            .range(from, to);
 
         if (error) {
             console.error('投稿取得エラー:', error);
-            showEmptyState();
-            bindDirectPostButtons();
-            return;
+            return [];
         }
 
-        posts = data || [];
-        await applyLikeCounts(posts);
-
-        if (posts.length === 0) {
-            showEmptyState();
-            bindDirectPostButtons();
-        } else {
-            renderPosts(posts);
+        const pageData = data || [];
+        
+        // 返されたデータがページサイズ未満なら、もう投稿はない
+        if (pageData.length < POSTS_PER_PAGE) {
+            hasMorePosts = false;
         }
 
+        return pageData;
     } catch (error) {
         console.error('投稿読み込みエラー:', error);
+        return [];
+    }
+}
+
+// 旧APIとの互換性（リロード用）
+async function loadPosts() {
+    currentPage = 0;
+    hasMorePosts = true;
+    const data = await loadPostsPage(0);
+    posts = data || [];
+    
+    if (posts.length === 0) {
         showEmptyState();
         bindDirectPostButtons();
+    } else {
+        renderPosts(posts);
+    }
+}
+
+// ===== 無限スクロール =====
+function initInfiniteScroll() {
+    window.addEventListener('scroll', onScroll);
+}
+
+function onScroll() {
+    if (isLoadingMore || !hasMorePosts) return;
+    
+    const scrollBottom = window.innerHeight + window.scrollY;
+    const docHeight = document.documentElement.scrollHeight;
+    
+    // ページ下部300px手前で次のページを読み込む
+    if (scrollBottom >= docHeight - 300) {
+        loadMorePosts();
+    }
+}
+
+async function loadMorePosts() {
+    if (isLoadingMore || !hasMorePosts) return;
+    isLoadingMore = true;
+
+    // ローディング表示を追加
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'load-more-indicator';
+    loadingIndicator.innerHTML = '<span class="loading-spinner"></span>';
+    postsGrid.parentNode.appendChild(loadingIndicator);
+
+    try {
+        currentPage++;
+        const newPosts = await loadPostsPage(currentPage);
+        
+        if (newPosts.length > 0) {
+            posts = posts.concat(newPosts);
+            appendPosts(newPosts);
+        }
+    } catch (e) {
+        console.error('追加読み込みエラー:', e);
+    } finally {
+        loadingIndicator.remove();
+        isLoadingMore = false;
     }
 }
 
@@ -176,6 +254,44 @@ function showEmptyState() {
     bindDirectPostButtons();
 }
 
+// ===== 投稿カードHTML生成 =====
+function createPostCardHTML(post) {
+    const profile = post.profiles || {};
+    const catType = profile.primary_cat_type || null;
+    const typeInfo = catType ? (catTypes[catType] || { name: '不明' }) : null;
+    const typeName = typeInfo?.name || '未診断';
+    const catTypeKey = catType || 'explorer';
+    const avatarUrl = profile.avatar_url || `images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg`;
+    const isLiked = userLikes.has(post.id);
+    
+    return `
+        <div class="post-card" data-post-id="${post.id}">
+            <div class="post-image-wrapper">
+                <span class="post-type-chip">${typeName}</span>
+                <img src="${post.share_image_url || 'images/sample/IMG_1276.JPG'}" alt="" class="post-image" loading="lazy" onerror="this.onerror=null;this.src='images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg';">
+            </div>
+            <div class="post-info">
+                <p class="post-caption">${post.caption || ''}</p>
+                <div class="post-author">
+                    <img src="${avatarUrl}" alt="" class="post-avatar" loading="lazy">
+                    <div class="post-author-info">
+                        <span class="post-author-name">${profile.username || '匿名'}</span>
+                        <span class="post-date">${formatDate(post.created_at)}</span>
+                    </div>
+                </div>
+                <div class="post-footer">
+                    <button class="card-like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="card-like-count">${post.likes_count || 0}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // ===== 投稿一覧表示 =====
 function renderPosts(postsToRender) {
     if (postsToRender.length === 0) {
@@ -183,45 +299,26 @@ function renderPosts(postsToRender) {
         return;
     }
 
-    postsGrid.innerHTML = postsToRender.map(post => {
-        const profile = post.profiles || {};
-        const catType = profile.primary_cat_type || 'explorer';
-        const typeInfo = catTypes[catType] || { name: '不明' };
-        const avatarUrl = profile.avatar_url || `images/cats-svg/${catType.charAt(0).toUpperCase() + catType.slice(1)}Cat.svg`;
-        const isLiked = userLikes.has(post.id);
-        
-        return `
-            <div class="post-card" data-post-id="${post.id}">
-                <div class="post-image-wrapper">
-                    <span class="post-type-chip">${typeInfo.name}</span>
-                    <img src="${post.share_image_url || 'images/sample/IMG_1276.JPG'}" alt="" class="post-image">
-                </div>
-                <div class="post-info">
-                    <p class="post-caption">${post.caption || ''}</p>
-                    <div class="post-author">
-                        <img src="${avatarUrl}" alt="" class="post-avatar">
-                        <div class="post-author-info">
-                            <span class="post-author-name">${profile.username || '匿名'}</span>
-                            <span class="post-date">${formatDate(post.created_at)}</span>
-                        </div>
-                    </div>
-                    <div class="post-footer">
-                        <button class="card-like-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                            <span class="card-like-count">${post.likes_count || 0}</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
+    postsGrid.innerHTML = postsToRender.map(post => createPostCardHTML(post)).join('');
+    bindPostCardEvents();
+}
 
+// ===== 投稿を追加表示（無限スクロール用） =====
+function appendPosts(newPosts) {
+    const html = newPosts.map(post => createPostCardHTML(post)).join('');
+    postsGrid.insertAdjacentHTML('beforeend', html);
+    bindPostCardEvents();
+}
+
+// ===== 投稿カードイベントバインド =====
+function bindPostCardEvents() {
     // クリックイベント追加
     document.querySelectorAll('.post-card').forEach(card => {
+        // 既にバインド済みなら重複しない
+        if (card.dataset.bound) return;
+        card.dataset.bound = 'true';
+
         card.addEventListener('click', (e) => {
-            // 点赞按钮点击时不打开弹窗
             if (e.target.closest('.card-like-btn')) return;
             const postId = card.dataset.postId;
             openPostModal(postId);
@@ -230,11 +327,26 @@ function renderPosts(postsToRender) {
 
     // 卡片点赞按钮事件
     document.querySelectorAll('.card-like-btn').forEach(btn => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = 'true';
+
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const postId = btn.dataset.postId;
             handleCardLike(postId, btn);
         });
+    });
+}
+
+// ===== 点赞状態をUIに反映（バックグラウンド読み込み後） =====
+function updateLikeStatesInUI() {
+    document.querySelectorAll('.card-like-btn').forEach(btn => {
+        const postId = btn.dataset.postId;
+        const isLiked = userLikes.has(postId);
+        if (isLiked) {
+            btn.classList.add('liked');
+            btn.querySelector('svg')?.setAttribute('fill', 'currentColor');
+        }
     });
 }
 
@@ -333,7 +445,7 @@ function resetDirectPostForm() {
     }
 }
 
-function handleDirectPostImageChange(e) {
+async function handleDirectPostImageChange(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -341,14 +453,16 @@ function handleDirectPostImageChange(e) {
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        directPostImageData = event.target.result;
+    try {
+        // 画像を圧縮してからプレビュー
+        directPostImageData = await compressImage(file);
         if (directPostPreview) {
             directPostPreview.innerHTML = `<img src="${directPostImageData}" alt="">`;
         }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error('画像圧縮エラー:', err);
+        alert('画像の処理に失敗しました');
+    }
 }
 
 async function handleDirectPostSubmit() {
@@ -398,15 +512,17 @@ async function openPostModal(postId) {
     modalEditImageData = null;
 
     const profile = post.profiles || {};
-    const catType = profile.primary_cat_type || 'explorer';
-    const typeInfo = catTypes[catType] || { name: '不明' };
-    const avatarUrl = profile.avatar_url || `images/cats-svg/${catType.charAt(0).toUpperCase() + catType.slice(1)}Cat.svg`;
+    const catType = profile.primary_cat_type || null;
+    const typeInfo = catType ? (catTypes[catType] || { name: '不明' }) : null;
+    const typeName = typeInfo?.name || '未診断';
+    const catTypeKey = catType || 'explorer';
+    const avatarUrl = profile.avatar_url || `images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg`;
 
     // 内容を設定
     document.getElementById('modalImage').src = post.share_image_url || 'images/sample/IMG_1276.JPG';
     document.getElementById('modalAuthorAvatar').src = avatarUrl;
     document.getElementById('modalAuthorName').textContent = profile.username || '匿名';
-    document.getElementById('modalAuthorType').textContent = typeInfo.name;
+    document.getElementById('modalAuthorType').textContent = typeName;
     document.getElementById('modalCaption').textContent = post.caption || '';
     document.getElementById('modalDate').textContent = formatDate(post.created_at);
     document.getElementById('modalLikeCount').textContent = post.likes_count || 0;
@@ -520,7 +636,7 @@ function toggleModalEdit(isEdit) {
     }
 }
 
-function handleModalEditImageChange(e) {
+async function handleModalEditImageChange(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -528,14 +644,15 @@ function handleModalEditImageChange(e) {
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        modalEditImageData = event.target.result;
+    try {
+        modalEditImageData = await compressImage(file);
         if (modalEditPreview) {
             modalEditPreview.innerHTML = `<img src="${modalEditImageData}" alt="">`;
         }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error('画像圧縮エラー:', err);
+        alert('画像の処理に失敗しました');
+    }
 }
 
 async function saveModalEdits() {
@@ -670,9 +787,11 @@ async function loadComments(postId) {
 
 function renderCommentItem(comment) {
     const profile = comment.profiles || {};
-    const catType = profile.primary_cat_type || 'explorer';
-    const typeInfo = catTypes[catType] || { name: '不明' };
-    const avatarUrl = profile.avatar_url || `images/cats-svg/${catType.charAt(0).toUpperCase() + catType.slice(1)}Cat.svg`;
+    const catType = profile.primary_cat_type || null;
+    const typeInfo = catType ? (catTypes[catType] || { name: '不明' }) : null;
+    const typeName = typeInfo?.name || '未診断';
+    const catTypeKey = catType || 'explorer';
+    const avatarUrl = profile.avatar_url || `images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg`;
     const isOwner = currentUser && comment.user_id === currentUser.id;
 
     return `
@@ -681,7 +800,7 @@ function renderCommentItem(comment) {
             <div class="comment-body">
                 <div class="comment-header">
                     <span class="comment-name">${profile.username || '匿名'}</span>
-                    <span class="comment-type">${typeInfo.name}</span>
+                    <span class="comment-type">${typeName}</span>
                 </div>
                 <p class="comment-content">${comment.content}</p>
                 <div class="comment-actions">

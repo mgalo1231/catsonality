@@ -300,14 +300,16 @@ function renderMyPosts() {
     if (mypagePostBtn) mypagePostBtn.style.display = '';
 
     myPostsGrid.innerHTML = userPosts.map(post => {
-        const catType = userProfile?.primary_cat_type || 'explorer';
-        const typeInfo = catTypes[catType] || { name: '不明' };
-        const avatarUrl = userProfile?.avatar_url || `images/cats-svg/${catType.charAt(0).toUpperCase() + catType.slice(1)}Cat.svg`;
+        const catType = userProfile?.primary_cat_type || null;
+        const typeInfo = catType ? (catTypes[catType] || { name: '不明' }) : null;
+        const typeName = typeInfo?.name || '未診断';
+        const catTypeKey = catType || 'explorer';
+        const avatarUrl = userProfile?.avatar_url || `images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg`;
         return `
             <div class="post-card" data-id="${post.id}">
                 <div class="post-image-wrapper">
-                    <span class="post-type-chip">${typeInfo.name}</span>
-                    <img src="${post.share_image_url || 'images/sample/IMG_1276.JPG'}" alt="" class="post-image">
+                    <span class="post-type-chip">${typeName}</span>
+                    <img src="${post.share_image_url || 'images/sample/IMG_1276.JPG'}" alt="" class="post-image" onerror="this.onerror=null;this.src='images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg';">
                 </div>
                 <div class="post-info">
                     <p class="post-caption">${post.caption || ''}</p>
@@ -452,7 +454,7 @@ function resetMypageDirectPostForm() {
     }
 }
 
-function handleMypageDirectPostImageChange(e) {
+async function handleMypageDirectPostImageChange(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -460,14 +462,15 @@ function handleMypageDirectPostImageChange(e) {
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        mypageDirectPostImageData = event.target.result;
+    try {
+        mypageDirectPostImageData = await compressImage(file);
         if (mypageDirectPostPreview) {
             mypageDirectPostPreview.innerHTML = `<img src="${mypageDirectPostImageData}" alt="">`;
         }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error('画像圧縮エラー:', err);
+        alert('画像の処理に失敗しました');
+    }
 }
 
 async function handleMypageDirectPostSubmit() {
@@ -741,7 +744,7 @@ function togglePostEdit(isEdit) {
     }
 }
 
-function handlePostEditImageChange(e) {
+async function handlePostEditImageChange(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -749,14 +752,15 @@ function handlePostEditImageChange(e) {
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        postEditImageData = event.target.result;
+    try {
+        postEditImageData = await compressImage(file);
         if (postEditPreview) {
             postEditPreview.innerHTML = `<img src="${postEditImageData}" alt="">`;
         }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error('画像圧縮エラー:', err);
+        alert('画像の処理に失敗しました');
+    }
 }
 
 async function savePostEdits() {

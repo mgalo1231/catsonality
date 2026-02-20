@@ -9,6 +9,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 // グローバルに公開
 window.supabaseClient = supabaseClient;
 
+
 // ===== 認証状態の管理 =====
 
 // 現在のユーザーを取得

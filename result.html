@@ -266,6 +266,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/image-utils.js"></script>
     
     <script>
         // 完整的结果数据定义
@@ -511,6 +512,15 @@
                         // 清除 localStorage 中的临时数据
                         localStorage.removeItem('catsonalityResult');
                         localStorage.removeItem('catsonalityProfile');
+
+                        // 如果用户还没有设置primary_cat_type，自动更新
+                        if (!dbProfile?.primary_cat_type) {
+                            await supabaseClient
+                                .from('profiles')
+                                .update({ primary_cat_type: type })
+                                .eq('id', currentUser.id);
+                            console.log('primary_cat_typeを更新しました:', type);
+                        }
                     }
                 } catch (e) {
                     console.error('診断結果保存エラー:', e);
@@ -756,10 +766,12 @@
                 const postModal = document.getElementById('postModal');
                 const previewImage = document.getElementById('postPreviewImage');
                 
-                // 使用当前结果图片
-                const resultImage = document.getElementById('resultImage').src;
-                previewImage.src = resultImage;
-                postImageData = resultImage; // 默认使用结果图片
+                // 使用当前结果图片（保存相对路径，避免本地和部署环境URL不同的问题）
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentType = urlParams.get('type') || 'explorer';
+                const resultImageRelativePath = resultData[currentType]?.image || 'images/cats-svg/ExplorerCat.svg';
+                previewImage.src = resultImageRelativePath;
+                postImageData = resultImageRelativePath; // 默认使用结果图片的相对路径
                 
                 postModal.classList.add('active');
             });
@@ -770,8 +782,8 @@
             document.getElementById('postImageInput').click();
         });
 
-        // 图片选择处理
-        document.getElementById('postImageInput').addEventListener('change', (e) => {
+        // 图片选择处理（圧縮付き）
+        document.getElementById('postImageInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
             if (!file.type.startsWith('image/')) {
@@ -779,12 +791,13 @@
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                postImageData = event.target.result;
+            try {
+                postImageData = await compressImage(file);
                 document.getElementById('postPreviewImage').src = postImageData;
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                console.error('画像圧縮エラー:', err);
+                alert('画像の処理に失敗しました');
+            }
         });
 
         // 关闭发布弹窗

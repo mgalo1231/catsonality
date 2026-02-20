@@ -74,42 +74,40 @@
     }
 }
 
-/* 加载点动画 */
-.loading-dots {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+/* 进度条 */
+.loading-progress-track {
+    width: 180px;
+    height: 4px;
+    background: #e8e8e8;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 0.6rem;
 }
 
-.loading-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--primary);
-    animation: dotBounce 1.4s ease-in-out infinite;
+.loading-progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #FE7EB1, #FFB6C1, #FE7EB1);
+    background-size: 200% 100%;
+    animation: progressMove 2.5s ease-in-out infinite, progressGrow 12s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
-.loading-dot:nth-child(1) {
-    animation-delay: 0s;
+/* 进度条渐变流动效果 */
+@keyframes progressMove {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
 }
 
-.loading-dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.loading-dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes dotBounce {
-    0%, 80%, 100% {
-        transform: scale(0.8);
-        opacity: 0.5;
-    }
-    40% {
-        transform: scale(1.2);
-        opacity: 1;
-    }
+/* 进度条增长：先快后慢，模拟真实加载感 */
+@keyframes progressGrow {
+    0%   { width: 0%; }
+    10%  { width: 15%; }
+    25%  { width: 40%; }
+    50%  { width: 65%; }
+    75%  { width: 80%; }
+    90%  { width: 88%; }
+    100% { width: 92%; }
 }
 
 /* 旋转动画变体（可选） */
@@ -139,10 +137,9 @@
     .loading-text {
         font-size: 1rem;
     }
-    
-    .loading-dot {
-        width: 6px;
-        height: 6px;
+
+    .loading-progress-track {
+        width: 150px;
     }
 }
 
@@ -154,5 +151,9 @@
     
     .loading-text {
         font-size: 0.9rem;
+    }
+
+    .loading-progress-track {
+        width: 120px;
     }
 }

@@ -14,6 +14,11 @@ const catTypes = {
 
 // 页面加载时执行
 document.addEventListener('DOMContentLoaded', async () => {
+    // 非同期データ読み込みがあるため、手動でloadingを制御する
+    if (window.loadingController) {
+        window.loadingController.claim();
+    }
+
     try {
         await loadPreviewPosts();
         
@@ -72,17 +77,19 @@ async function loadPreviewPosts() {
 function renderPreviewPosts(posts, container) {
     container.innerHTML = posts.map(post => {
         const profile = post.profiles || {};
-        const catType = profile.primary_cat_type || 'explorer';
-        const typeInfo = catTypes[catType] || catTypes.explorer;
+        const catType = profile.primary_cat_type || null;
+        const typeInfo = catType ? (catTypes[catType] || catTypes.explorer) : null;
+        const typeName = typeInfo?.name || '未診断';
+        const catTypeKey = catType || 'explorer';
         
         return `
             <div class="preview-card">
                 <img src="${post.share_image_url || 'images/sample/IMG_1276.JPG'}" 
                      alt="" 
                      class="preview-image"
-                     onerror="this.src='images/sample/IMG_1276.JPG'">
+                     onerror="this.onerror=null;this.src='images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg'">
                 <div class="preview-info">
-                    <span class="preview-type">${typeInfo.name}</span>
+                    <span class="preview-type">${typeName}</span>
                     <p class="preview-caption">${post.caption || '診断結果をシェアしました！'}</p>
                 </div>
             </div>
