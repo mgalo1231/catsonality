@@ -74,13 +74,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // 投稿を表示
+        // 投稿を表示（まずメタデータだけで高速レンダリング）
         posts = postsResult || [];
         if (posts.length === 0) {
             showEmptyState();
             bindDirectPostButtons();
         } else {
             renderPosts(posts);
+            // 画像をバックグラウンドで非同期ロード
+            loadPostImages(posts.map(p => p.id));
         }
         
         // UIを初期化
@@ -143,16 +145,17 @@ async function applyLikeCounts(postList) {
     }
 }
 
-// ===== 投稿読み込み（ページネーション対応） =====
+// ===== 投稿読み込み（ページネーション対応・2段階ロード） =====
 async function loadPostsPage(page) {
     try {
         const from = page * POSTS_PER_PAGE;
         const to = from + POSTS_PER_PAGE - 1;
 
+        // Phase 1: メタデータのみ取得（share_image_urlを除外して高速化）
         const { data, error } = await supabaseClient
             .from('posts')
             .select(`
-                id, user_id, share_image_url, caption, likes_count, created_at, result_id,
+                id, user_id, caption, likes_count, created_at,
                 profiles:user_id (
                     username,
                     avatar_url,
@@ -169,7 +172,6 @@ async function loadPostsPage(page) {
 
         const pageData = data || [];
         
-        // 返されたデータがページサイズ未満なら、もう投稿はない
         if (pageData.length < POSTS_PER_PAGE) {
             hasMorePosts = false;
         }
@@ -178,6 +180,38 @@ async function loadPostsPage(page) {
     } catch (error) {
         console.error('投稿読み込みエラー:', error);
         return [];
+    }
+}
+
+// Phase 2: 画像を非同期で個別ロード
+async function loadPostImages(postIds) {
+    if (!postIds || postIds.length === 0) return;
+
+    // 1件ずつ画像を取得してカードに反映
+    for (const postId of postIds) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('posts')
+                .select('id, share_image_url')
+                .eq('id', postId)
+                .single();
+
+            if (error || !data?.share_image_url) continue;
+
+            // ローカルデータを更新
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.share_image_url = data.share_image_url;
+            }
+
+            // DOMの画像を更新
+            const card = document.querySelector(`.post-card[data-post-id="${postId}"] .post-image`);
+            if (card) {
+                card.src = data.share_image_url;
+            }
+        } catch (e) {
+            // 個別の画像取得失敗は無視
+        }
     }
 }
 
@@ -193,6 +227,7 @@ async function loadPosts() {
         bindDirectPostButtons();
     } else {
         renderPosts(posts);
+        loadPostImages(posts.map(p => p.id));
     }
 }
 
@@ -230,6 +265,7 @@ async function loadMorePosts() {
         if (newPosts.length > 0) {
             posts = posts.concat(newPosts);
             appendPosts(newPosts);
+            loadPostImages(newPosts.map(p => p.id));
         }
     } catch (e) {
         console.error('追加読み込みエラー:', e);
@@ -264,11 +300,14 @@ function createPostCardHTML(post) {
     const avatarUrl = profile.avatar_url || `images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg`;
     const isLiked = userLikes.has(post.id);
     
+    const fallbackImg = `images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg`;
+    const imgSrc = post.share_image_url || fallbackImg;
+    
     return `
         <div class="post-card" data-post-id="${post.id}">
             <div class="post-image-wrapper">
                 <span class="post-type-chip">${typeName}</span>
-                <img src="${post.share_image_url || 'images/sample/IMG_1276.JPG'}" alt="" class="post-image" loading="lazy" onerror="this.onerror=null;this.src='images/cats-svg/${catTypeKey.charAt(0).toUpperCase() + catTypeKey.slice(1)}Cat.svg';">
+                <img src="${imgSrc}" alt="" class="post-image" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImg}';">
             </div>
             <div class="post-info">
                 <p class="post-caption">${post.caption || ''}</p>
