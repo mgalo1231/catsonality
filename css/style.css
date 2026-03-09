@@ -483,14 +483,9 @@ input[type="submit"],
         padding: 0.9rem 2.5rem;
     }
     
-    /* 移动端减少猫咪数量 */
-    .cat-3, .cat-4, .cat-7, .cat-8 {
+    /* 窄屏隐藏首页漂浮插画 */
+    .floating-cats {
         display: none;
-    }
-    
-    .float-cat {
-        width: 80px;
-        opacity: 0.28;
     }
 }
 
@@ -539,9 +534,9 @@ input[type="submit"],
         height: 1.3rem;
     }
     
-    .float-cat {
-        width: 70px;
-        opacity: 0.22;
+    /* 维持窄屏策略：不显示插画 */
+    .floating-cats {
+        display: none;
     }
 }
 
